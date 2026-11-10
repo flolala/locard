@@ -1,36 +1,151 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LOCARD
 
-## Getting Started
+Web dashboard untuk card holder pintar LOCARD: lacak lokasi terakhir, bunyikan
+alarm, atur zona aman, dan aktifkan mode hilang — dari perangkat apa pun.
 
-First, run the development server:
+> **Your premium carry for peace of mind.**
+
+## Menjalankan
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Buka <http://localhost:3000>.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Akun demo dibuat otomatis saat pertama kali halaman dibuka:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+email    : demo@locard.id
+password : locard123
+```
 
-## Learn More
+Build produksi:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run build
+npm start
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Stack
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Bagian | Pilihan |
+|---|---|
+| Framework | Next.js 16 (App Router, Turbopack) |
+| Bahasa | TypeScript |
+| Styling | Tailwind CSS v4 |
+| Database | SQLite lewat `node:sqlite` (bawaan Node 22+) |
+| Peta | Leaflet + react-leaflet, tile CARTO Light |
+| Auth | JWT (jose) di cookie httpOnly + bcrypt |
 
-## Deploy on Vercel
+Tidak ada layanan eksternal yang wajib. Database dibuat otomatis di
+`data/locard.db` (di-gitignore).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Arsitektur
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+Bridge / perangkat            Next.js (server)                 Browser
+──────────────────            ────────────────                 ───────
+ESP32, app pendamping  ──►  POST /api/ingest/:api_key  ──►  Dashboard
+gateway GPS, simulator      simpan lokasi + evaluasi          Peta, riwayat,
+                            zona aman + baterai               notifikasi
+```
+
+### Lapisan provider
+
+Posisi perangkat tidak di-hardcode ke satu vendor. Setiap perangkat punya
+`provider` yang menjelaskan dari mana datanya datang:
+
+| Provider | Status | Keterangan |
+|---|---|---|
+| `mock` | siap | Simulator bawaan untuk demo dan uji usability. |
+| `webhook` | siap | Perangkat apa pun mengirim posisi ke endpoint LOCARD. |
+| `findhub` | butuh bridge | Xiaomi Tag via Google Find Hub. |
+
+## Soal Xiaomi Tag
+
+Xiaomi Tag hanya bekerja melalui **Apple Find My** dan **Google Find Hub**,
+dan **tidak** kompatibel dengan Xiaomi Home. Google menyatakan belum
+menyediakan API/SDK publik untuk Find Hub, sementara laporan lokasinya
+terenkripsi end-to-end dengan kunci milik pemilik perangkat.
+
+Konsekuensinya: aplikasi web tidak bisa membaca posisi Xiaomi Tag secara
+langsung. LOCARD menyelesaikannya dengan memisahkan *sumber posisi* dari
+*antarmuka*:
+
+1. **Sekarang** — pakai `mock` untuk demo, atau `webhook` bila Anda punya
+   tracker sendiri (ESP32/BLE/GPS).
+2. **Nanti** — jalankan bridge Find Hub sendiri (self-hosted) yang memegang
+   kunci perangkat, lalu teruskan hasilnya ke endpoint `webhook` LOCARD.
+   Frontend tidak perlu diubah.
+
+## API
+
+Semua endpoint perangkat memakai API key per-perangkat (bukan sesi login).
+
+### Kirim posisi
+
+```http
+POST /api/ingest/:api_key
+Content-Type: application/json
+
+{
+  "lat": -6.2088,
+  "lng": 106.8456,
+  "accuracy": 15,
+  "battery": 80,
+  "recorded_at": "2026-11-10T10:00:00Z"
+}
+```
+
+`lat` dan `lng` wajib. Sisanya opsional. Setiap kiriman otomatis:
+
+- memperbarui "terakhir terlihat" perangkat;
+- mengevaluasi zona aman (keluar/masuk → notifikasi);
+- memberi notifikasi bila baterai ≤ 20%.
+
+### Ambil perintah (bridge polling)
+
+```http
+GET  /api/bridge/:api_key/commands
+POST /api/bridge/:api_key/commands   { "id": "...", "status": "acked" }
+```
+
+### Endpoint sesi
+
+| Method | Path | Fungsi |
+|---|---|---|
+| POST | `/api/auth/register` | Daftar |
+| POST | `/api/auth/login` | Masuk |
+| POST | `/api/auth/logout` | Keluar |
+| GET/POST | `/api/devices` | Daftar / tambah perangkat |
+| GET/PATCH/DELETE | `/api/devices/:id` | Detail / ubah / hapus |
+| POST | `/api/devices/:id/command` | `ring`, `locate`, `lost_on`, `lost_off` |
+| POST | `/api/devices/:id/geofence` | Simpan zona aman |
+| POST | `/api/devices/:id/simulate` | Geser posisi perangkat mock |
+
+## Halaman
+
+| Path | Isi |
+|---|---|
+| `/` | Landing page |
+| `/login`, `/register` | Autentikasi |
+| `/app` | Dashboard: daftar perangkat, peta, notifikasi |
+| `/app/devices/:id` | Detail: peta + jejak, riwayat, zona aman, endpoint bridge |
+| `/f/:slug` | Halaman publik untuk penemu barang (aktif saat mode hilang) |
+
+## Environment
+
+| Variabel | Default | Fungsi |
+|---|---|---|
+| `LOCARD_SECRET` | dev fallback | Secret JWT — **wajib** diubah untuk produksi |
+| `LOCARD_DB` | `data/locard.db` | Lokasi file SQLite |
+
+## Roadmap
+
+- [ ] Bridge ESP32 + BLE beacon (firmware contoh)
+- [ ] Push notification (web push) untuk peringatan zona aman
+- [ ] Bagikan perangkat ke anggota keluarga (multi-user)
+- [ ] Adapter Find Hub self-hosted
+- [ ] Ekspor riwayat lokasi (CSV/GPX)
