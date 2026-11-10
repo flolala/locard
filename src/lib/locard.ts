@@ -1,7 +1,9 @@
 import "server-only";
 
 import {
-  db,
+  all,
+  first,
+  run,
   nowIso,
   uid,
   type AlertRow,
@@ -29,7 +31,7 @@ export function newSlug() {
   return randomToken(10);
 }
 
-export function createDevice(
+export async function createDevice(
   userId: string,
   input: {
     name: string;
@@ -39,99 +41,100 @@ export function createDevice(
     contactName?: string;
     contactPhone?: string;
   },
-): DeviceRow {
+): Promise<DeviceRow> {
   const id = uid();
-  db.prepare(
+  await run(
     `INSERT INTO devices
       (id, user_id, name, kind, provider, color, api_key, share_slug,
        lost_mode, lost_message, contact_name, contact_phone, created_at)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?, ?)`,
-  ).run(
-    id,
-    userId,
-    input.name.trim() || "Perangkat baru",
-    input.kind ?? "cardholder",
-    input.provider ?? "mock",
-    input.color ?? "gold",
-    newApiKey(),
-    newSlug(),
-    "Barang ini milik orang lain. Mohon hubungi pemilik lewat kontak di halaman ini.",
-    input.contactName ?? null,
-    input.contactPhone ?? null,
-    nowIso(),
+    [
+      id,
+      userId,
+      input.name.trim() || "Perangkat baru",
+      input.kind ?? "cardholder",
+      input.provider ?? "mock",
+      input.color ?? "gold",
+      newApiKey(),
+      newSlug(),
+      "Barang ini milik orang lain. Mohon hubungi pemilik lewat kontak di halaman ini.",
+      input.contactName ?? null,
+      input.contactPhone ?? null,
+      nowIso(),
+    ],
   );
 
-  return getDeviceById(id)!;
+  return (await getDeviceById(id))!;
 }
 
-export function listDevices(userId: string): DeviceRow[] {
-  return db
-    .prepare("SELECT * FROM devices WHERE user_id = ? ORDER BY created_at ASC")
-    .all(userId) as unknown as DeviceRow[];
+export function listDevices(userId: string): Promise<DeviceRow[]> {
+  return all<DeviceRow>(
+    "SELECT * FROM devices WHERE user_id = ? ORDER BY created_at ASC",
+    [userId],
+  );
 }
 
-export function getDeviceById(id: string): DeviceRow | undefined {
-  return db.prepare("SELECT * FROM devices WHERE id = ?").get(id) as
-    | DeviceRow
-    | undefined;
+export function getDeviceById(id: string): Promise<DeviceRow | undefined> {
+  return first<DeviceRow>("SELECT * FROM devices WHERE id = ?", [id]);
 }
 
-export function getDeviceForUser(id: string, userId: string): DeviceRow | undefined {
-  return db.prepare("SELECT * FROM devices WHERE id = ? AND user_id = ?").get(id, userId) as
-    | DeviceRow
-    | undefined;
+export function getDeviceForUser(
+  id: string,
+  userId: string,
+): Promise<DeviceRow | undefined> {
+  return first<DeviceRow>("SELECT * FROM devices WHERE id = ? AND user_id = ?", [
+    id,
+    userId,
+  ]);
 }
 
-export function getDeviceByApiKey(key: string): DeviceRow | undefined {
-  return db.prepare("SELECT * FROM devices WHERE api_key = ?").get(key) as
-    | DeviceRow
-    | undefined;
+export function getDeviceByApiKey(key: string): Promise<DeviceRow | undefined> {
+  return first<DeviceRow>("SELECT * FROM devices WHERE api_key = ?", [key]);
 }
 
-export function getDeviceBySlug(slug: string): DeviceRow | undefined {
-  return db.prepare("SELECT * FROM devices WHERE share_slug = ?").get(slug) as
-    | DeviceRow
-    | undefined;
+export function getDeviceBySlug(slug: string): Promise<DeviceRow | undefined> {
+  return first<DeviceRow>("SELECT * FROM devices WHERE share_slug = ?", [slug]);
 }
 
-export function locationsFor(deviceId: string, limit = 200): LocationRow[] {
-  return db
-    .prepare(
-      "SELECT * FROM locations WHERE device_id = ? ORDER BY recorded_at DESC LIMIT ?",
-    )
-    .all(deviceId, limit) as unknown as LocationRow[];
+export function locationsFor(deviceId: string, limit = 200): Promise<LocationRow[]> {
+  return all<LocationRow>(
+    "SELECT * FROM locations WHERE device_id = ? ORDER BY recorded_at DESC LIMIT ?",
+    [deviceId, limit],
+  );
 }
 
-export function alertsFor(deviceId: string, limit = 30): AlertRow[] {
-  return db
-    .prepare("SELECT * FROM alerts WHERE device_id = ? ORDER BY created_at DESC LIMIT ?")
-    .all(deviceId, limit) as unknown as AlertRow[];
+export function alertsFor(deviceId: string, limit = 30): Promise<AlertRow[]> {
+  return all<AlertRow>(
+    "SELECT * FROM alerts WHERE device_id = ? ORDER BY created_at DESC LIMIT ?",
+    [deviceId, limit],
+  );
 }
 
-export function recentAlertsForUser(userId: string, limit = 20): AlertRow[] {
-  return db
-    .prepare(
-      `SELECT a.* FROM alerts a
-       JOIN devices d ON d.id = a.device_id
-       WHERE d.user_id = ?
-       ORDER BY a.created_at DESC LIMIT ?`,
-    )
-    .all(userId, limit) as unknown as AlertRow[];
+export function recentAlertsForUser(userId: string, limit = 20): Promise<AlertRow[]> {
+  return all<AlertRow>(
+    `SELECT a.* FROM alerts a
+     JOIN devices d ON d.id = a.device_id
+     WHERE d.user_id = ?
+     ORDER BY a.created_at DESC LIMIT ?`,
+    [userId, limit],
+  );
 }
 
-export function commandsFor(deviceId: string, limit = 20): CommandRow[] {
-  return db
-    .prepare("SELECT * FROM commands WHERE device_id = ? ORDER BY created_at DESC LIMIT ?")
-    .all(deviceId, limit) as unknown as CommandRow[];
+export function commandsFor(deviceId: string, limit = 20): Promise<CommandRow[]> {
+  return all<CommandRow>(
+    "SELECT * FROM commands WHERE device_id = ? ORDER BY created_at DESC LIMIT ?",
+    [deviceId, limit],
+  );
 }
 
-export function geofencesFor(deviceId: string): GeofenceRow[] {
-  return db
-    .prepare("SELECT * FROM geofences WHERE device_id = ? ORDER BY created_at ASC")
-    .all(deviceId) as unknown as GeofenceRow[];
+export function geofencesFor(deviceId: string): Promise<GeofenceRow[]> {
+  return all<GeofenceRow>(
+    "SELECT * FROM geofences WHERE device_id = ? ORDER BY created_at ASC",
+    [deviceId],
+  );
 }
 
-export function addAlert(input: {
+export async function addAlert(input: {
   deviceId: string;
   type: string;
   title: string;
@@ -139,66 +142,73 @@ export function addAlert(input: {
   lat?: number;
   lng?: number;
 }) {
-  db.prepare(
+  await run(
     "INSERT INTO alerts (id, device_id, type, title, body, lat, lng, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-  ).run(
-    uid(),
-    input.deviceId,
-    input.type,
-    input.title,
-    input.body ?? null,
-    input.lat ?? null,
-    input.lng ?? null,
-    nowIso(),
+    [
+      uid(),
+      input.deviceId,
+      input.type,
+      input.title,
+      input.body ?? null,
+      input.lat ?? null,
+      input.lng ?? null,
+      nowIso(),
+    ],
   );
 }
 
-export function hasRecentAlert(deviceId: string, type: string, withinMinutes: number) {
+export async function hasRecentAlert(
+  deviceId: string,
+  type: string,
+  withinMinutes: number,
+) {
   const cutoff = new Date(Date.now() - withinMinutes * 60_000).toISOString();
-  const row = db
-    .prepare(
-      "SELECT COUNT(*) AS n FROM alerts WHERE device_id = ? AND type = ? AND created_at >= ?",
-    )
-    .get(deviceId, type, cutoff) as { n: number };
-  return row.n > 0;
+  const row = await first<{ n: number }>(
+    "SELECT COUNT(*) AS n FROM alerts WHERE device_id = ? AND type = ? AND created_at >= ?",
+    [deviceId, type, cutoff],
+  );
+  return (row?.n ?? 0) > 0;
 }
 
 /**
  * Stores a position, refreshes the device's "last seen" snapshot and
  * evaluates geofences / battery thresholds.
  */
-export function recordLocation(device: DeviceRow, payload: IngestPayload) {
+export async function recordLocation(device: DeviceRow, payload: IngestPayload) {
   const recordedAt = payload.recorded_at ?? nowIso();
 
-  db.prepare(
+  await run(
     `INSERT INTO locations (id, device_id, lat, lng, accuracy, battery, source, recorded_at, created_at)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-  ).run(
-    uid(),
-    device.id,
-    payload.lat,
-    payload.lng,
-    payload.accuracy ?? null,
-    payload.battery ?? null,
-    payload.source ?? "webhook",
-    recordedAt,
-    nowIso(),
+    [
+      uid(),
+      device.id,
+      payload.lat,
+      payload.lng,
+      payload.accuracy ?? null,
+      payload.battery ?? null,
+      payload.source ?? "webhook",
+      recordedAt,
+      nowIso(),
+    ],
   );
 
-  db.prepare(
+  await run(
     `UPDATE devices SET last_lat = ?, last_lng = ?, last_accuracy = ?, last_battery = ?,
        last_seen_at = ?, last_source = ? WHERE id = ?`,
-  ).run(
-    payload.lat,
-    payload.lng,
-    payload.accuracy ?? null,
-    payload.battery ?? null,
-    recordedAt,
-    payload.source ?? "webhook",
-    device.id,
+    [
+      payload.lat,
+      payload.lng,
+      payload.accuracy ?? null,
+      payload.battery ?? null,
+      recordedAt,
+      payload.source ?? "webhook",
+      device.id,
+    ],
   );
 
-  for (const fence of geofencesFor(device.id)) {
+  const fences = await geofencesFor(device.id);
+  for (const fence of fences) {
     if (!fence.active) continue;
     const dist = distanceMeters(
       { lat: payload.lat, lng: payload.lng },
@@ -207,7 +217,7 @@ export function recordLocation(device: DeviceRow, payload: IngestPayload) {
     const inside = dist <= fence.radius_m ? 1 : 0;
 
     if (fence.last_inside === 1 && inside === 0) {
-      addAlert({
+      await addAlert({
         deviceId: device.id,
         type: "geofence_exit",
         title: `${device.name} keluar dari zona "${fence.name}"`,
@@ -216,7 +226,7 @@ export function recordLocation(device: DeviceRow, payload: IngestPayload) {
         lng: payload.lng,
       });
     } else if (fence.last_inside === 0 && inside === 1) {
-      addAlert({
+      await addAlert({
         deviceId: device.id,
         type: "geofence_enter",
         title: `${device.name} kembali ke zona "${fence.name}"`,
@@ -226,18 +236,15 @@ export function recordLocation(device: DeviceRow, payload: IngestPayload) {
       });
     }
 
-    db.prepare("UPDATE geofences SET last_inside = ? WHERE id = ?").run(
-      inside,
-      fence.id,
-    );
+    await run("UPDATE geofences SET last_inside = ? WHERE id = ?", [inside, fence.id]);
   }
 
   if (
     payload.battery !== undefined &&
     payload.battery <= 20 &&
-    !hasRecentAlert(device.id, "low_battery", 360)
+    !(await hasRecentAlert(device.id, "low_battery", 360))
   ) {
-    addAlert({
+    await addAlert({
       deviceId: device.id,
       type: "low_battery",
       title: `Baterai ${device.name} lemah`,
@@ -246,16 +253,20 @@ export function recordLocation(device: DeviceRow, payload: IngestPayload) {
   }
 }
 
-export function createCommand(device: DeviceRow, type: string): CommandRow {
+export async function createCommand(
+  device: DeviceRow,
+  type: string,
+): Promise<CommandRow> {
   const id = uid();
   const createdAt = nowIso();
 
-  db.prepare(
+  await run(
     "INSERT INTO commands (id, device_id, type, status, created_at) VALUES (?, ?, ?, 'pending', ?)",
-  ).run(id, device.id, type, createdAt);
+    [id, device.id, type, createdAt],
+  );
 
   if (type === "ring") {
-    addAlert({
+    await addAlert({
       deviceId: device.id,
       type: "ring",
       title: `Alarm dibunyikan di ${device.name}`,
@@ -263,15 +274,15 @@ export function createCommand(device: DeviceRow, type: string): CommandRow {
     });
   }
 
-  return db.prepare("SELECT * FROM commands WHERE id = ?").get(id) as unknown as CommandRow;
+  return (await first<CommandRow>("SELECT * FROM commands WHERE id = ?", [id]))!;
 }
 
-export function setLostMode(device: DeviceRow, enabled: boolean) {
-  db.prepare("UPDATE devices SET lost_mode = ? WHERE id = ?").run(
+export async function setLostMode(device: DeviceRow, enabled: boolean) {
+  await run("UPDATE devices SET lost_mode = ? WHERE id = ?", [
     enabled ? 1 : 0,
     device.id,
-  );
-  addAlert({
+  ]);
+  await addAlert({
     deviceId: device.id,
     type: enabled ? "lost_mode_on" : "lost_mode_off",
     title: enabled
@@ -283,41 +294,37 @@ export function setLostMode(device: DeviceRow, enabled: boolean) {
   });
 }
 
-export function upsertGeofence(
+export async function upsertGeofence(
   device: DeviceRow,
   input: { name?: string; lat: number; lng: number; radius_m: number },
-): GeofenceRow {
-  const existing = geofencesFor(device.id)[0];
+): Promise<GeofenceRow> {
+  const existing = (await geofencesFor(device.id))[0];
   if (existing) {
-    db.prepare(
+    await run(
       "UPDATE geofences SET name = ?, lat = ?, lng = ?, radius_m = ?, active = 1, last_inside = NULL WHERE id = ?",
-    ).run(
-      input.name ?? existing.name,
-      input.lat,
-      input.lng,
-      input.radius_m,
-      existing.id,
+      [input.name ?? existing.name, input.lat, input.lng, input.radius_m, existing.id],
     );
-    return geofencesFor(device.id)[0];
+    return (await geofencesFor(device.id))[0];
   }
 
   const id = uid();
-  db.prepare(
+  await run(
     "INSERT INTO geofences (id, device_id, name, lat, lng, radius_m, active, created_at) VALUES (?, ?, ?, ?, ?, ?, 1, ?)",
-  ).run(
-    id,
-    device.id,
-    input.name ?? "Zona aman",
-    input.lat,
-    input.lng,
-    input.radius_m,
-    nowIso(),
+    [
+      id,
+      device.id,
+      input.name ?? "Zona aman",
+      input.lat,
+      input.lng,
+      input.radius_m,
+      nowIso(),
+    ],
   );
-  return geofencesFor(device.id)[0];
+  return (await geofencesFor(device.id))[0];
 }
 
-export function deviceSummary(device: DeviceRow) {
-  const fence = geofencesFor(device.id)[0] ?? null;
+export async function deviceSummary(device: DeviceRow) {
+  const fence = (await geofencesFor(device.id))[0] ?? null;
   const distanceToFence =
     fence && device.last_lat != null && device.last_lng != null
       ? distanceMeters(
@@ -334,4 +341,4 @@ export function deviceSummary(device: DeviceRow) {
   };
 }
 
-export type DeviceSummary = ReturnType<typeof deviceSummary>;
+export type DeviceSummary = Awaited<ReturnType<typeof deviceSummary>>;

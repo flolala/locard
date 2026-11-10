@@ -1,10 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import {
-  createCommand,
-  getDeviceForUser,
-  setLostMode,
-} from "@/lib/locard";
+import { createCommand, getDeviceForUser, setLostMode } from "@/lib/locard";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -15,7 +11,7 @@ export async function POST(request: Request, { params }: Ctx) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
-  const device = getDeviceForUser(id, user.id);
+  const device = await getDeviceForUser(id, user.id);
   if (!device) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const body = await request.json().catch(() => ({}));
@@ -26,13 +22,10 @@ export async function POST(request: Request, { params }: Ctx) {
   }
 
   if (type === "lost_on" || type === "lost_off") {
-    setLostMode(device, type === "lost_on");
-    return NextResponse.json({
-      ok: true,
-      command: { type, status: "acked" },
-    });
+    await setLostMode(device, type === "lost_on");
+    return NextResponse.json({ ok: true, command: { type, status: "acked" } });
   }
 
-  const command = createCommand(device, type);
+  const command = await createCommand(device, type);
   return NextResponse.json({ ok: true, command });
 }

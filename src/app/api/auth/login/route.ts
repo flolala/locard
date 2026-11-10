@@ -6,7 +6,7 @@ export async function POST(request: Request) {
   const email = String(body?.email ?? "").trim();
   const password = String(body?.password ?? "");
 
-  const row = findUserByEmail(email);
+  const row = await findUserByEmail(email);
   if (!row || !(await verifyPassword(password, row.password_hash))) {
     return NextResponse.json(
       { error: "Email atau password salah." },

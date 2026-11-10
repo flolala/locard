@@ -45,3 +45,8 @@ next-env.d.ts
 *.db
 *.db-shm
 *.db-wal
+
+# cloudflare
+/.open-next/
+/.wrangler/
+.dev.vars

@@ -23,17 +23,17 @@ export default async function DevicePage({
   const user = await requireUser();
   const { id } = await params;
 
-  const device = getDeviceForUser(id, user.id);
+  const device = await getDeviceForUser(id, user.id);
   if (!device) notFound();
 
-  const view = toDeviceView(deviceSummary(device));
-  const locations = locationsFor(device.id, 80);
+  const view = toDeviceView(await deviceSummary(device));
+  const locations = await locationsFor(device.id, 80);
   const trail = [...locations]
     .reverse()
     .map((point) => ({ lat: point.lat, lng: point.lng }));
-  const alerts = alertsFor(device.id, 12);
+  const alerts = await alertsFor(device.id, 12);
   const provider = providerMeta(device.provider);
-  const fence = geofencesFor(device.id)[0] ?? null;
+  const fence = (await geofencesFor(device.id))[0] ?? null;
 
   const center =
     view.last_lat != null && view.last_lng != null

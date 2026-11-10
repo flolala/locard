@@ -10,7 +10,7 @@ export default async function FoundPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const device = getDeviceBySlug(slug);
+  const device = await getDeviceBySlug(slug);
   if (!device) notFound();
 
   const hasLocation = device.last_lat != null && device.last_lng != null;

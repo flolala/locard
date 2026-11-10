@@ -1,108 +1,46 @@
-import { DatabaseSync } from "node:sqlite";
-import fs from "node:fs";
-import path from "node:path";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 
-const dataDir = path.join(process.cwd(), "data");
-fs.mkdirSync(dataDir, { recursive: true });
+/**
+ * Minimal D1 typings so the app does not need a separate workers-types build
+ * step. Keep in sync with Cloudflare's D1 API.
+ */
+type D1Result<T> = { results?: T[]; success: boolean };
+type D1Statement = {
+  bind(...values: unknown[]): D1Statement;
+  first<T = unknown>(): Promise<T | null>;
+  all<T = unknown>(): Promise<D1Result<T>>;
+  run(): Promise<{ success: boolean }>;
+};
+export type D1Database = {
+  prepare(query: string): D1Statement;
+  batch<T = unknown>(statements: D1Statement[]): Promise<D1Result<T>[]>;
+};
 
-const dbPath = process.env.LOCARD_DB ?? path.join(dataDir, "locard.db");
-
-const SCHEMA = `
-PRAGMA journal_mode = WAL;
-PRAGMA foreign_keys = ON;
-
-CREATE TABLE IF NOT EXISTS users (
-  id            TEXT PRIMARY KEY,
-  email         TEXT NOT NULL UNIQUE,
-  name          TEXT NOT NULL,
-  password_hash TEXT NOT NULL,
-  created_at    TEXT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS devices (
-  id             TEXT PRIMARY KEY,
-  user_id        TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  name           TEXT NOT NULL,
-  kind           TEXT NOT NULL DEFAULT 'cardholder',
-  provider       TEXT NOT NULL DEFAULT 'mock',
-  color          TEXT NOT NULL DEFAULT 'gold',
-  api_key        TEXT NOT NULL UNIQUE,
-  share_slug     TEXT NOT NULL UNIQUE,
-  lost_mode      INTEGER NOT NULL DEFAULT 0,
-  lost_message   TEXT,
-  contact_name   TEXT,
-  contact_phone  TEXT,
-  created_at     TEXT NOT NULL,
-  last_seen_at   TEXT,
-  last_lat       REAL,
-  last_lng       REAL,
-  last_accuracy  REAL,
-  last_battery   INTEGER,
-  last_source    TEXT
-);
-
-CREATE TABLE IF NOT EXISTS locations (
-  id          TEXT PRIMARY KEY,
-  device_id   TEXT NOT NULL REFERENCES devices(id) ON DELETE CASCADE,
-  lat         REAL NOT NULL,
-  lng         REAL NOT NULL,
-  accuracy    REAL,
-  battery     INTEGER,
-  source      TEXT NOT NULL DEFAULT 'webhook',
-  recorded_at TEXT NOT NULL,
-  created_at  TEXT NOT NULL
-);
-CREATE INDEX IF NOT EXISTS idx_locations_device ON locations(device_id, recorded_at DESC);
-
-CREATE TABLE IF NOT EXISTS geofences (
-  id         TEXT PRIMARY KEY,
-  device_id  TEXT NOT NULL REFERENCES devices(id) ON DELETE CASCADE,
-  name       TEXT NOT NULL,
-  lat        REAL NOT NULL,
-  lng        REAL NOT NULL,
-  radius_m   REAL NOT NULL,
-  active     INTEGER NOT NULL DEFAULT 1,
-  last_inside INTEGER,
-  created_at TEXT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS alerts (
-  id         TEXT PRIMARY KEY,
-  device_id  TEXT NOT NULL REFERENCES devices(id) ON DELETE CASCADE,
-  type       TEXT NOT NULL,
-  title      TEXT NOT NULL,
-  body       TEXT,
-  lat        REAL,
-  lng        REAL,
-  created_at TEXT NOT NULL,
-  read_at    TEXT
-);
-CREATE INDEX IF NOT EXISTS idx_alerts_device ON alerts(device_id, created_at DESC);
-
-CREATE TABLE IF NOT EXISTS commands (
-  id          TEXT PRIMARY KEY,
-  device_id   TEXT NOT NULL REFERENCES devices(id) ON DELETE CASCADE,
-  type        TEXT NOT NULL,
-  status      TEXT NOT NULL DEFAULT 'pending',
-  created_at  TEXT NOT NULL,
-  delivered_at TEXT
-);
-CREATE INDEX IF NOT EXISTS idx_commands_device ON commands(device_id, created_at DESC);
-`;
-
-declare global {
-  var __locardDb: DatabaseSync | undefined;
+export function db(): D1Database {
+  const env = getCloudflareContext().env as unknown as { DB?: D1Database };
+  if (!env.DB) {
+    throw new Error(
+      "Binding D1 'DB' tidak ditemukan. Jalankan lewat wrangler atau next dev dengan initOpenNextCloudflareForDev().",
+    );
+  }
+  return env.DB;
 }
 
-function createDb(): DatabaseSync {
-  const db = new DatabaseSync(dbPath);
-  db.exec(SCHEMA);
-  return db;
+export async function all<T>(sql: string, params: unknown[] = []): Promise<T[]> {
+  const result = await db().prepare(sql).bind(...params).all<T>();
+  return (result.results ?? []) as T[];
 }
 
-export const db: DatabaseSync = globalThis.__locardDb ?? createDb();
-if (process.env.NODE_ENV !== "production") {
-  globalThis.__locardDb = db;
+export async function first<T>(
+  sql: string,
+  params: unknown[] = [],
+): Promise<T | undefined> {
+  const row = await db().prepare(sql).bind(...params).first<T>();
+  return row ?? undefined;
+}
+
+export async function run(sql: string, params: unknown[] = []) {
+  return db().prepare(sql).bind(...params).run();
 }
 
 export const nowIso = () => new Date().toISOString();

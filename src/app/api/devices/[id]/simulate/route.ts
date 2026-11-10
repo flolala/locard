@@ -16,7 +16,7 @@ export async function POST(_request: Request, { params }: Ctx) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
-  const device = getDeviceForUser(id, user.id);
+  const device = await getDeviceForUser(id, user.id);
   if (!device) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const base =
@@ -29,21 +29,16 @@ export async function POST(_request: Request, { params }: Ctx) {
 
   for (let i = 0; i < steps; i++) {
     point = jitter(point, 60 + Math.random() * 220);
-    recordLocation(
-      { ...device, last_lat: null, last_lng: null } as typeof device,
-      {
-        ...point,
-        accuracy: 8 + Math.random() * 35,
-        battery:
-          device.last_battery != null
-            ? Math.max(3, device.last_battery - 1)
-            : 74,
-        source: "mock",
-        recorded_at: new Date(Date.now() + i * 1000).toISOString(),
-      },
-    );
+    await recordLocation(device, {
+      ...point,
+      accuracy: 8 + Math.random() * 35,
+      battery:
+        device.last_battery != null ? Math.max(3, device.last_battery - 1) : 74,
+      source: "mock",
+      recorded_at: new Date(Date.now() + i * 1000).toISOString(),
+    });
   }
 
-  const fresh = getDeviceForUser(id, user.id)!;
-  return NextResponse.json({ ok: true, device: deviceSummary(fresh) });
+  const fresh = (await getDeviceForUser(id, user.id))!;
+  return NextResponse.json({ ok: true, device: await deviceSummary(fresh) });
 }

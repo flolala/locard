@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { db } from "@/lib/db";
+import { run } from "@/lib/db";
 import { deviceSummary, getDeviceForUser } from "@/lib/locard";
 
 type Ctx = { params: Promise<{ id: string }> };
@@ -10,10 +10,10 @@ export async function GET(_request: Request, { params }: Ctx) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
-  const device = getDeviceForUser(id, user.id);
+  const device = await getDeviceForUser(id, user.id);
   if (!device) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  return NextResponse.json({ device: deviceSummary(device) });
+  return NextResponse.json({ device: await deviceSummary(device) });
 }
 
 export async function PATCH(request: Request, { params }: Ctx) {
@@ -21,7 +21,7 @@ export async function PATCH(request: Request, { params }: Ctx) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
-  const device = getDeviceForUser(id, user.id);
+  const device = await getDeviceForUser(id, user.id);
   if (!device) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const body = await request.json().catch(() => ({}));
@@ -44,16 +44,14 @@ export async function PATCH(request: Request, { params }: Ctx) {
   text("contact_name", 120);
   text("contact_phone", 40);
 
-  if (fields.length === 0) {
-    return NextResponse.json({ device: deviceSummary(device) });
+  if (fields.length > 0) {
+    values.push(id);
+    await run(`UPDATE devices SET ${fields.join(", ")} WHERE id = ?`, values);
   }
 
-  values.push(id);
-  db.prepare(`UPDATE devices SET ${fields.join(", ")} WHERE id = ?`).run(
-    ...(values as (string | number)[]),
-  );
-
-  return NextResponse.json({ device: deviceSummary(getDeviceForUser(id, user.id)!) });
+  return NextResponse.json({
+    device: await deviceSummary((await getDeviceForUser(id, user.id))!),
+  });
 }
 
 export async function DELETE(_request: Request, { params }: Ctx) {
@@ -61,9 +59,9 @@ export async function DELETE(_request: Request, { params }: Ctx) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
-  const device = getDeviceForUser(id, user.id);
+  const device = await getDeviceForUser(id, user.id);
   if (!device) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  db.prepare("DELETE FROM devices WHERE id = ?").run(id);
+  await run("DELETE FROM devices WHERE id = ?", [id]);
   return NextResponse.json({ ok: true });
 }

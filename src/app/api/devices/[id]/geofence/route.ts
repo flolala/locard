@@ -9,7 +9,7 @@ export async function POST(request: Request, { params }: Ctx) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
-  const device = getDeviceForUser(id, user.id);
+  const device = await getDeviceForUser(id, user.id);
   if (!device) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const body = await request.json().catch(() => ({}));
@@ -20,14 +20,15 @@ export async function POST(request: Request, { params }: Ctx) {
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
     return NextResponse.json({ error: "Koordinat zona tidak valid." }, { status: 400 });
   }
-  if (!Number.isFinite(radius) || radius < 25 || radius > 20_000) {
+
+  if (!Number.isFinite(radius) || radius < 25 || radius > 20000) {
     return NextResponse.json(
       { error: "Radius harus antara 25 m dan 20.000 m." },
       { status: 400 },
     );
   }
 
-  const fence = upsertGeofence(device, {
+  const fence = await upsertGeofence(device, {
     name: typeof body?.name === "string" ? body.name.slice(0, 60) : undefined,
     lat,
     lng,

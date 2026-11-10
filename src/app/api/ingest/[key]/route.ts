@@ -10,7 +10,7 @@ type Ctx = { params: Promise<{ key: string }> };
  */
 export async function POST(request: Request, { params }: Ctx) {
   const { key } = await params;
-  const device = getDeviceByApiKey(key);
+  const device = await getDeviceByApiKey(key);
   if (!device) {
     return NextResponse.json({ error: "API key tidak dikenal." }, { status: 401 });
   }
@@ -23,7 +23,7 @@ export async function POST(request: Request, { params }: Ctx) {
     return NextResponse.json({ error: message }, { status: 400 });
   }
 
-  recordLocation(device, { ...payload, source: payload.source ?? "webhook" });
+  await recordLocation(device, { ...payload, source: payload.source ?? "webhook" });
 
   return NextResponse.json({
     ok: true,

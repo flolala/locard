@@ -6,8 +6,9 @@ export async function GET() {
   const user = await getSession();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const devices = await listDevices(user.id);
   return NextResponse.json({
-    devices: listDevices(user.id).map(deviceSummary),
+    devices: await Promise.all(devices.map(deviceSummary)),
   });
 }
 
@@ -18,10 +19,13 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}));
   const name = String(body?.name ?? "").trim();
   if (name.length < 2) {
-    return NextResponse.json({ error: "Nama perangkat minimal 2 karakter." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Nama perangkat minimal 2 karakter." },
+      { status: 400 },
+    );
   }
 
-  const device = createDevice(user.id, {
+  const device = await createDevice(user.id, {
     name,
     kind: typeof body?.kind === "string" ? body.kind : undefined,
     provider: typeof body?.provider === "string" ? body.provider : undefined,
@@ -31,5 +35,5 @@ export async function POST(request: Request) {
       typeof body?.contactPhone === "string" ? body.contactPhone : undefined,
   });
 
-  return NextResponse.json({ device: deviceSummary(device) }, { status: 201 });
+  return NextResponse.json({ device: await deviceSummary(device) }, { status: 201 });
 }

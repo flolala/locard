@@ -80,6 +80,41 @@ langsung. LOCARD menyelesaikannya dengan memisahkan *sumber posisi* dari
    kunci perangkat, lalu teruskan hasilnya ke endpoint `webhook` LOCARD.
    Frontend tidak perlu diubah.
 
+## Deploy ke Cloudflare Workers
+
+Aplikasi ini berjalan di Cloudflare Workers memakai adapter **OpenNext** dan
+database **D1** (SQLite terkelola).
+
+```bash
+# 1. buat database D1 (sekali saja)
+npx wrangler d1 create locard-db
+# salin database_id ke wrangler.jsonc
+
+# 2. terapkan skema
+npx wrangler d1 execute locard-db --remote --file=./schema.sql --yes
+
+# 3. build + deploy
+npm run deploy
+```
+
+Variabel yang dibutuhkan saat deploy: `CLOUDFLARE_API_TOKEN` dan
+`CLOUDFLARE_ACCOUNT_ID`.
+
+| Perintah | Fungsi |
+|---|---|
+| `npm run dev` | Dev server lokal (D1 lokal via Miniflare) |
+| `npm run preview` | Build produksi + preview di Wrangler |
+| `npm run deploy` | Build + deploy ke Workers |
+| `npm run cf-typegen` | Generate tipe binding Cloudflare |
+
+Binding di `wrangler.jsonc`:
+
+| Binding | Resource |
+|---|---|
+| `DB` | D1 `locard-db` |
+| `ASSETS` | Static assets |
+| `LOCARD_SEED` | `"1"` → isi akun demo saat pertama diakses |
+
 ## API
 
 Semua endpoint perangkat memakai API key per-perangkat (bukan sesi login).
@@ -140,7 +175,8 @@ POST /api/bridge/:api_key/commands   { "id": "...", "status": "acked" }
 | Variabel | Default | Fungsi |
 |---|---|---|
 | `LOCARD_SECRET` | dev fallback | Secret JWT — **wajib** diubah untuk produksi |
-| `LOCARD_DB` | `data/locard.db` | Lokasi file SQLite |
+| `LOCARD_SEED` | — | Set `1` untuk mengisi akun demo di produksi |
+| `DB` | binding D1 | Database (lihat `wrangler.jsonc`) |
 
 ## Roadmap
 

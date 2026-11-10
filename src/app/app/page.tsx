@@ -8,8 +8,9 @@ export default async function AppHome() {
   const user = await requireUser();
   await ensureDemoSeed();
 
-  const devices = listDevices(user.id).map(deviceSummary).map(toDeviceView);
-  const alerts = recentAlertsForUser(user.id).map((alert) => ({
+  const rows = await listDevices(user.id);
+  const devices = (await Promise.all(rows.map(deviceSummary))).map(toDeviceView);
+  const alerts = (await recentAlertsForUser(user.id)).map((alert) => ({
     id: alert.id,
     device_id: alert.device_id,
     type: alert.type,

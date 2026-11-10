@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { db, nowIso, uid } from "./db";
+import { first, nowIso, run, uid } from "./db";
 
 const COOKIE = "locard_session";
 const SECRET = new TextEncoder().encode(
@@ -72,14 +72,17 @@ export async function requireUser(): Promise<SessionUser> {
   return user;
 }
 
-export type PublicUser = SessionUser;
+export type UserRow = {
+  id: string;
+  email: string;
+  name: string;
+  password_hash: string;
+};
 
-export function findUserByEmail(email: string) {
-  return db
-    .prepare("SELECT * FROM users WHERE email = ?")
-    .get(email.toLowerCase().trim()) as
-    | { id: string; email: string; name: string; password_hash: string }
-    | undefined;
+export function findUserByEmail(email: string): Promise<UserRow | undefined> {
+  return first<UserRow>("SELECT * FROM users WHERE email = ?", [
+    email.toLowerCase().trim(),
+  ]);
 }
 
 export async function registerUser(input: {
@@ -88,7 +91,7 @@ export async function registerUser(input: {
   password: string;
 }): Promise<SessionUser> {
   const email = input.email.toLowerCase().trim();
-  const existing = findUserByEmail(email);
+  const existing = await findUserByEmail(email);
   if (existing) throw new Error("Email sudah terdaftar.");
 
   const user: SessionUser = {
@@ -97,9 +100,10 @@ export async function registerUser(input: {
     name: input.name.trim(),
   };
 
-  db.prepare(
+  await run(
     "INSERT INTO users (id, email, name, password_hash, created_at) VALUES (?, ?, ?, ?, ?)",
-  ).run(user.id, user.email, user.name, await hashPassword(input.password), nowIso());
+    [user.id, user.email, user.name, await hashPassword(input.password), nowIso()],
+  );
 
   return user;
 }

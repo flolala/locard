@@ -1,0 +1,24 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "locard",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "locard-db",
+      "database_id": "33568e05-5d24-4f9b-ac5c-3bfb66b86dcf"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    "LOCARD_SEED": "1"
+  }
+}
