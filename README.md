@@ -5,6 +5,8 @@ alarm, atur zona aman, dan aktifkan mode hilang — dari perangkat apa pun.
 
 > **Your premium carry for peace of mind.**
 
+**Live:** <https://locard.locard.workers.dev> — akun demo `demo@locard.id` / `locard123`.
+
 ## Menjalankan
 
 ```bash
