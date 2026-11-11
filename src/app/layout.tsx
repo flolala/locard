@@ -20,11 +20,11 @@ const display = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  title: "LOCARD — More than just a card holder",
+  title: "LOCARD",
   description:
     "Card holder premium dengan tracker terpadu. Lacak lokasi terakhir, bunyikan alarm, dan tetap tenang — bahkan saat ponsel ikut hilang.",
   openGraph: {
-    title: "LOCARD — More than just a card holder",
+    title: "LOCARD — Your premium carry for peace of mind.",
     description:
       "Card holder premium dengan tracker terpadu. Pre-order LOCARD mulai Rp199.000.",
     type: "website",
@@ -36,6 +36,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="id"
       data-scroll-behavior="smooth"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} ${display.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-paper text-ink">{children}</body>
