@@ -454,7 +454,7 @@ export default function Home() {
         <div className="mx-auto w-full max-w-6xl px-6 pb-10">
           <p className="rule mb-6" />
           <p className="text-[10px] tracking-[0.16em] text-ink-faint uppercase">
-            © 2026 LOCARD · Kelompok 4 · {SITE.city}
+            © 2026 LOCARD · {SITE.city}
           </p>
         </div>
       </footer>
