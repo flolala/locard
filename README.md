@@ -63,24 +63,32 @@ Posisi perangkat tidak di-hardcode ke satu vendor. Setiap perangkat punya
 |---|---|---|
 | `mock` | siap | Simulator bawaan untuk demo dan uji usability. |
 | `webhook` | siap | Perangkat apa pun mengirim posisi ke endpoint LOCARD. |
-| `findhub` | butuh bridge | Xiaomi Tag via Google Find Hub. |
+| `findhub` | butuh bridge | Menerima posisi dari layanan pelacakan pihak ketiga melalui bridge self-hosted. |
 
-## Soal Xiaomi Tag
+## Soal integrasi tracker
 
-Xiaomi Tag hanya bekerja melalui **Apple Find My** dan **Google Find Hub**,
-dan **tidak** kompatibel dengan Xiaomi Home. Google menyatakan belum
-menyediakan API/SDK publik untuk Find Hub, sementara laporan lokasinya
-terenkripsi end-to-end dengan kunci milik pemilik perangkat.
+Sumber posisi dipisahkan dari antarmuka lewat lapisan *provider*, sehingga
+dashboard tidak terikat pada satu vendor.
 
-Konsekuensinya: aplikasi web tidak bisa membaca posisi Xiaomi Tag secara
-langsung. LOCARD menyelesaikannya dengan memisahkan *sumber posisi* dari
-*antarmuka*:
+Layanan pelacakan pihak ketiga umumnya tidak menyediakan API publik, dan
+laporan lokasinya terenkripsi end-to-end. Karena itu posisi diteruskan oleh
+bridge yang Anda jalankan sendiri ke endpoint `webhook` LOCARD.
 
-1. **Sekarang** — pakai `mock` untuk demo, atau `webhook` bila Anda punya
-   tracker sendiri (ESP32/BLE/GPS).
-2. **Nanti** — jalankan bridge Find Hub sendiri (self-hosted) yang memegang
-   kunci perangkat, lalu teruskan hasilnya ke endpoint `webhook` LOCARD.
-   Frontend tidak perlu diubah.
+## Pre-order
+
+Halaman `/preorder` menangani pemesanan:
+
+- **LOCARD** — Rp249.000, DP Rp50.000/unit via QRIS, unggah bukti transfer.
+- **Jasa Pemasangan Tracker** — Rp199.000, dilanjutkan lewat WhatsApp.
+
+Pesanan disimpan di tabel `orders` (D1); bukti transfer disimpan di KV
+(binding `PROOFS`).
+
+| Variabel | Fungsi |
+|---|---|
+| `NEXT_PUBLIC_WHATSAPP` | Nomor WhatsApp bisnis (format `62812...`) |
+| `NEXT_PUBLIC_CONTACT_EMAIL` | Email kontak |
+| `NEXT_PUBLIC_QRIS_IMAGE` | URL gambar QRIS. Kosong = QR demo. |
 
 ## Deploy ke Cloudflare Workers
 

@@ -308,7 +308,7 @@ function AddDevice() {
             >
               <option value="mock">Simulasi</option>
               <option value="webhook">Webhook</option>
-              <option value="findhub">Find Hub</option>
+              <option value="findhub">Tracker eksternal</option>
             </select>
           </div>
           <div className="flex gap-2">

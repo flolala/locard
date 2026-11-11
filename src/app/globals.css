@@ -1,18 +1,31 @@
 @import "tailwindcss";
 
 @theme {
-  --color-ink: #14110f;
-  --color-ink-soft: #4a423a;
-  --color-ink-faint: #857a6d;
-  --color-paper: #faf7f2;
-  --color-paper-dim: #f2ece1;
-  --color-paper-deep: #e9e0d1;
-  --color-line: #e2d8c8;
-  --color-gold: #a8822a;
-  --color-gold-soft: #e6d5a8;
-  --color-gold-wash: #f6efdd;
-  --color-danger: #a33a2c;
-  --color-success: #2f6b4f;
+  /* Brand palette */
+  --color-wine: #561c24;
+  --color-wine-soft: #6d2932;
+  --color-wine-deep: #3d1319;
+  --color-sand: #c7b7a3;
+  --color-cream: #e8d8c4;
+
+  /* Surfaces */
+  --color-paper: #faf5ee;
+  --color-paper-dim: #f3ebe0;
+  --color-paper-deep: #e8d8c4;
+  --color-line: #ded1c0;
+
+  /* Text */
+  --color-ink: #2a1a1c;
+  --color-ink-soft: #5c4649;
+  --color-ink-faint: #8d7679;
+
+  /* Accent aliases kept for existing components */
+  --color-gold: #6d2932;
+  --color-gold-soft: #c7b7a3;
+  --color-gold-wash: #f2e7dc;
+
+  --color-danger: #8e2f2f;
+  --color-success: #47664f;
 
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-display), ui-serif, Georgia, serif;
@@ -28,11 +41,12 @@ body {
   color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 ::selection {
-  background: var(--color-gold-soft);
-  color: var(--color-ink);
+  background: var(--color-wine);
+  color: var(--color-cream);
 }
 
 .font-display {
@@ -41,17 +55,43 @@ body {
   letter-spacing: -0.015em;
 }
 
-.grain {
-  background-image: radial-gradient(
-      circle at 15% 10%,
-      rgba(168, 130, 42, 0.07),
-      transparent 45%
-    ),
-    radial-gradient(circle at 85% 0%, rgba(20, 17, 15, 0.05), transparent 40%);
+.font-display-italic {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* Editorial label */
+.eyebrow {
+  font-size: 0.65rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
 }
 
 .hairline {
   border-color: var(--color-line);
+}
+
+.grain {
+  background-image: radial-gradient(
+      circle at 12% 4%,
+      rgba(109, 41, 50, 0.08),
+      transparent 42%
+    ),
+    radial-gradient(circle at 88% 0%, rgba(199, 183, 163, 0.28), transparent 46%);
+}
+
+/* Thin decorative rule */
+.rule {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--color-line) 15%,
+    var(--color-line) 85%,
+    transparent
+  );
 }
 
 .leaflet-container {
@@ -59,7 +99,6 @@ body {
   background: #ece7dd;
 }
 
-/* Keep third-party tiles inside the LOCARD palette. */
 .leaflet-tile-pane {
   filter: grayscale(0.55) sepia(0.18) saturate(0.85) contrast(1.02) brightness(1.04);
 }
@@ -88,6 +127,27 @@ body {
   position: absolute;
   inset: 0;
   border-radius: 9999px;
-  border: 2px solid var(--color-gold);
+  border: 2px solid var(--color-wine);
   animation: pulse-ring 2.4s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rise {
+  animation: rise 0.7s cubic-bezier(0.16, 0.84, 0.44, 1) both;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }

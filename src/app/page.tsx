@@ -1,141 +1,172 @@
 import Link from "next/link";
-import { ensureDemoSeed } from "@/lib/seed";
+import { PRODUCTS, SITE, formatIDR, waLink } from "@/lib/site";
 
 const features = [
   {
+    n: "01",
     title: "Lokasi terakhir",
-    body: "Lihat posisi terakhir card holder lengkap dengan waktu dan tingkat akurasi — dari perangkat apa pun.",
-    tag: "01",
+    body: "Lihat posisi terakhir card holder lengkap dengan waktu dan akurasi — dari perangkat apa pun.",
   },
   {
+    n: "02",
     title: "Alarm dari jauh",
-    body: "Barang tertinggal di sekitar Anda tapi tak terlihat? Bunyikan alarm dari dashboard.",
-    tag: "02",
+    body: "Barang tertinggal di sekitar Anda tetapi tak terlihat? Bunyikan alarm langsung dari dashboard.",
   },
   {
-    title: "Notifikasi zona aman",
-    body: "Tentukan area aman. LOCARD memberi tahu saat barang keluar dari area tersebut.",
-    tag: "03",
+    n: "03",
+    title: "Zona aman",
+    body: "Tentukan area aman. LOCARD mengabari begitu card holder keluar dari area tersebut.",
   },
   {
+    n: "04",
     title: "Mode hilang",
-    body: "Aktifkan halaman publik berisi kontak Anda, sehingga penemu bisa menghubungi langsung.",
-    tag: "04",
+    body: "Aktifkan halaman penemu berisi kontak Anda, agar siapa pun yang menemukannya bisa menghubungi.",
   },
 ];
 
 const stats = [
-  { value: "71%", label: "responden menyebut dompet / card holder sebagai barang yang paling sering hilang" },
+  { value: "71%", label: "responden menempatkan dompet atau card holder sebagai barang yang paling sering hilang" },
   { value: "52,4%", label: "memilih card holder dengan tracker menyatu dibanding jasa pasang terpisah" },
   { value: "n=21", label: "wawancara problem & solution validation" },
 ];
 
-export default async function Home() {
-  await ensureDemoSeed();
-
+export default function Home() {
   return (
-    <main className="grain flex-1">
-      <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6">
-        <div className="flex items-center gap-3">
-          <span className="grid h-8 w-8 place-items-center rounded-full border border-ink/15 bg-ink text-[11px] font-semibold tracking-[0.15em] text-paper">
-            LC
-          </span>
-          <span className="text-sm font-semibold tracking-[0.32em]">LOCARD</span>
-        </div>
-        <nav className="hidden items-center gap-8 text-sm text-ink-soft md:flex">
-          <a href="#fitur" className="transition hover:text-ink">Fitur</a>
-          <a href="#cara-kerja" className="transition hover:text-ink">Cara kerja</a>
-          <a href="#integrasi" className="transition hover:text-ink">Integrasi</a>
-        </nav>
-        <div className="flex items-center gap-3 text-sm">
-          <Link
-            href="/login"
-            className="rounded-full px-4 py-2 text-ink-soft transition hover:bg-paper-dim hover:text-ink"
-          >
-            Masuk
+    <main className="flex-1">
+      <header className="sticky top-0 z-40 border-b border-line/70 bg-paper/85 backdrop-blur-md">
+        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5">
+          <Link href="/" className="flex items-baseline gap-2.5">
+            <span className="font-display text-2xl tracking-[0.18em]">LOCARD</span>
+            <span className="hidden text-[9px] tracking-[0.3em] text-ink-faint uppercase sm:inline">
+              est. 2026
+            </span>
           </Link>
+
+          <nav className="hidden items-center gap-9 text-[13px] text-ink-soft md:flex">
+            <a href="#filosofi" className="transition hover:text-wine">Filosofi</a>
+            <a href="#produk" className="transition hover:text-wine">Produk</a>
+            <a href="#cara" className="transition hover:text-wine">Cara kerja</a>
+            <a href="#kontak" className="transition hover:text-wine">Kontak</a>
+          </nav>
+
           <Link
-            href="/register"
-            className="rounded-full bg-ink px-5 py-2.5 font-medium text-paper transition hover:bg-ink/90"
+            href="/preorder"
+            className="rounded-full bg-wine px-6 py-2.5 text-[11px] font-medium tracking-[0.18em] text-cream uppercase transition hover:bg-wine-soft"
           >
-            Mulai
+            Order Now
           </Link>
         </div>
       </header>
 
-      <section className="mx-auto grid w-full max-w-6xl gap-14 px-6 pt-10 pb-24 md:grid-cols-[1.15fr_0.85fr] md:items-center md:pt-16">
-        <div>
-          <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-line bg-paper px-3 py-1.5 text-[11px] tracking-[0.18em] text-ink-soft uppercase">
-            <span className="h-1.5 w-1.5 rounded-full bg-gold" />
-            Smart card holder · Kelompok 4
-          </p>
-          <h1 className="font-display text-[clamp(2.8rem,6vw,4.6rem)] leading-[0.98]">
-            Your premium carry
-            <br />
-            for <span className="text-gold">peace of mind</span>.
-          </h1>
-          <p className="mt-7 max-w-xl text-[15px] leading-relaxed text-ink-soft">
-            Card holder slim dengan tracker menyatu. Ketika kartu penting tertinggal,
-            Anda tetap bisa melihat lokasi terakhirnya — bahkan saat HP ikut hilang,
-            karena dashboard bisa dibuka dari laptop, komputer kantor, atau HP teman.
-          </p>
+      {/* Hero */}
+      <section className="grain relative overflow-hidden">
+        <div className="mx-auto grid w-full max-w-6xl gap-16 px-6 pt-16 pb-24 md:grid-cols-[1.05fr_0.95fr] md:items-center md:pt-24">
+          <div className="rise">
+            <p className="eyebrow flex items-center gap-3">
+              <span className="h-px w-8 bg-wine/40" />
+              Pre-order dibuka · Batch 01
+            </p>
 
-          <div className="mt-9 flex flex-wrap items-center gap-3">
-            <Link
-              href="/login"
-              className="rounded-full bg-ink px-6 py-3 text-sm font-medium text-paper transition hover:bg-ink/90"
-            >
-              Buka dashboard demo
-            </Link>
-            <a
-              href="#cara-kerja"
-              className="rounded-full border border-line px-6 py-3 text-sm text-ink-soft transition hover:border-ink/30 hover:text-ink"
-            >
-              Lihat cara kerja
-            </a>
+            <h1 className="mt-7 font-display text-[clamp(2.9rem,6.2vw,4.8rem)] leading-[0.95]">
+              Your premium carry
+              <br />
+              for <span className="font-display-italic text-wine">peace of mind</span>.
+            </h1>
+
+            <p className="mt-8 max-w-md text-[15px] leading-relaxed text-ink-soft">
+              Card holder slim dengan tracker terpadu. Saat kartu penting
+              tertinggal, Anda tahu ke mana harus mencari — bahkan ketika ponsel
+              ikut hilang.
+            </p>
+
+            <div className="mt-10 flex flex-wrap items-center gap-4">
+              <Link
+                href="/preorder"
+                className="group inline-flex items-center gap-3 rounded-full bg-wine px-8 py-4 text-[11px] font-medium tracking-[0.2em] text-cream uppercase transition hover:bg-wine-soft"
+              >
+                Order Now
+                <span className="transition-transform group-hover:translate-x-1">→</span>
+              </Link>
+              <a
+                href="#produk"
+                className="inline-flex items-center gap-2 border-b border-ink/20 pb-1 text-[11px] tracking-[0.2em] text-ink-soft uppercase transition hover:border-wine hover:text-wine"
+              >
+                Lihat koleksi
+              </a>
+            </div>
+
+            <div className="mt-14 flex flex-wrap gap-x-10 gap-y-4 text-[11px] tracking-[0.16em] text-ink-faint uppercase">
+              <span>Mulai {formatIDR(PRODUCTS.locard.price)}</span>
+              <span className="text-line">|</span>
+              <span>DP {formatIDR(PRODUCTS.locard.dp)} via QRIS</span>
+              <span className="text-line">|</span>
+              <span>Gratis konsultasi</span>
+            </div>
           </div>
 
-          <p className="mt-6 text-xs text-ink-faint">
-            Akun demo: <span className="font-mono">demo@locard.id</span> /{" "}
-            <span className="font-mono">locard123</span>
-          </p>
-        </div>
+          <div className="relative mx-auto w-full max-w-sm">
+            <div className="relative overflow-hidden rounded-t-[14rem] rounded-b-[2rem] bg-gradient-to-b from-wine to-wine-deep px-8 pt-14 pb-10 shadow-[0_50px_90px_-50px_rgba(61,19,25,0.7)]">
+              <div className="absolute inset-x-6 top-6 bottom-6 rounded-t-[12rem] rounded-b-[1.5rem] border border-cream/15" />
 
-        <div className="relative">
-          <div className="absolute -inset-6 rounded-[2rem] bg-gradient-to-br from-gold-soft/50 via-transparent to-paper-deep/60 blur-2xl" />
-          <div className="relative overflow-hidden rounded-[1.6rem] border border-line bg-paper shadow-[0_30px_80px_-40px_rgba(20,17,15,0.45)]">
-            <div className="flex items-center justify-between border-b border-line px-5 py-3.5">
-              <span className="text-[11px] tracking-[0.2em] text-ink-faint uppercase">
-                Card Holder Kulit
-              </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-success/10 px-2.5 py-1 text-[10px] font-medium text-success">
-                <span className="h-1.5 w-1.5 rounded-full bg-success" />
-                Terhubung
-              </span>
-            </div>
-            <div className="relative h-64 bg-paper-dim">
-              <div className="absolute inset-0 opacity-70 [background-image:linear-gradient(to_right,#e2d8c8_1px,transparent_1px),linear-gradient(to_bottom,#e2d8c8_1px,transparent_1px)] [background-size:36px_36px]" />
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                <span className="pulse-ring relative block h-4 w-4 rounded-full bg-gold ring-4 ring-paper" />
+              <p className="relative text-center text-[9px] tracking-[0.4em] text-cream/60 uppercase">
+                Locard · signature
+              </p>
+
+              {/* card holder illustration */}
+              <div className="relative mx-auto mt-8 aspect-[3/4] w-[74%]">
+                <div className="absolute inset-0 translate-x-2 translate-y-2 rounded-[1.4rem] bg-wine-deep/60" />
+                <div className="relative flex h-full w-full flex-col justify-between overflow-hidden rounded-[1.4rem] bg-gradient-to-br from-[#7a3139] via-[#6d2932] to-[#4a1b21] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
+                  <div className="pointer-events-none absolute inset-3 rounded-[1rem] border border-dashed border-cream/20" />
+
+                  <div className="flex items-start justify-between">
+                    <span className="font-display text-lg tracking-[0.2em] text-cream/90">
+                      L
+                    </span>
+                    <span className="text-[7px] tracking-[0.3em] text-cream/40 uppercase">
+                      slim
+                    </span>
+                  </div>
+
+                  <div className="space-y-2">
+                    {[0, 1, 2].map((i) => (
+                      <div
+                        key={i}
+                        className="h-2 rounded-full bg-cream/15"
+                        style={{ width: `${92 - i * 12}%` }}
+                      />
+                    ))}
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-[7px] tracking-[0.3em] text-cream/40 uppercase">
+                      tracker inside
+                    </span>
+                    <span className="relative grid h-2.5 w-2.5 place-items-center">
+                      <span className="absolute inset-0 rounded-full bg-cream/20" />
+                      <span className="h-1 w-1 rounded-full bg-cream" />
+                    </span>
+                  </div>
+                </div>
               </div>
-              <div className="absolute bottom-4 left-4 rounded-xl border border-line bg-paper/90 px-3 py-2 backdrop-blur">
-                <p className="text-[10px] tracking-[0.16em] text-ink-faint uppercase">
-                  Terakhir terlihat
-                </p>
-                <p className="text-sm font-medium">3 menit lalu · akurasi 18 m</p>
-              </div>
+
+              <p className="relative mt-8 text-center text-[10px] tracking-[0.28em] text-cream/50 uppercase">
+                leather · aluminium · 9 mm
+              </p>
             </div>
-            <div className="grid grid-cols-3 divide-x divide-line border-t border-line text-center">
+
+            <div className="mt-4 grid grid-cols-2 gap-3">
               {[
-                ["Baterai", "82%"],
-                ["Zona", "Di dalam"],
-                ["Sinyal", "Kuat"],
+                ["Alarm", "Bunyikan dari jauh"],
+                ["Zona aman", "Notifikasi otomatis"],
               ].map(([label, value]) => (
-                <div key={label} className="px-3 py-4">
-                  <p className="text-[10px] tracking-[0.16em] text-ink-faint uppercase">
+                <div
+                  key={label}
+                  className="rounded-2xl border border-line bg-paper/95 px-4 py-3 text-center"
+                >
+                  <p className="text-[9px] tracking-[0.2em] text-ink-faint uppercase">
                     {label}
                   </p>
-                  <p className="mt-1 text-sm font-medium">{value}</p>
+                  <p className="mt-0.5 text-[11px] font-medium">{value}</p>
                 </div>
               ))}
             </div>
@@ -143,12 +174,186 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="border-y border-line bg-paper-dim/50">
-        <div className="mx-auto grid w-full max-w-6xl gap-8 px-6 py-12 md:grid-cols-3">
+      {/* Marquee strip */}
+      <div className="border-y border-line bg-paper-dim/60">
+        <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-center gap-x-6 gap-y-2 px-6 py-4 text-[9px] tracking-[0.24em] text-ink-soft uppercase sm:text-[10px]">
+          <span>Slim profile</span>
+          <span className="text-wine/30">◆</span>
+          <span>Tracker terpadu</span>
+          <span className="text-wine/30">◆</span>
+          <span>Alarm</span>
+          <span className="text-wine/30">◆</span>
+          <span>Zona aman</span>
+          <span className="text-wine/30">◆</span>
+          <span>Mode hilang</span>
+        </div>
+      </div>
+
+      {/* Philosophy / features */}
+      <section id="filosofi" className="mx-auto w-full max-w-6xl px-6 py-24">
+        <div className="grid gap-12 md:grid-cols-[0.85fr_1.15fr]">
+          <div>
+            <p className="eyebrow">Filosofi</p>
+            <h2 className="mt-5 font-display text-[clamp(2.1rem,4vw,3.1rem)] leading-[1.02]">
+              Tenang itu kemewahan
+              <br />
+              yang paling <span className="font-display-italic text-wine">nyata</span>.
+            </h2>
+            <p className="mt-6 max-w-sm text-sm leading-relaxed text-ink-soft">
+              Kami tidak membuat dompet yang lebih ramai. Kami membuat satu benda
+              yang menyelesaikan satu kekhawatiran: kehilangan kartu penting di
+              tengah hari yang sibuk.
+            </p>
+          </div>
+
+          <div className="grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2">
+            {features.map((feature) => (
+              <article
+                key={feature.n}
+                className="group bg-paper p-7 transition hover:bg-paper-dim/70"
+              >
+                <div className="flex items-start justify-between">
+                  <span className="font-mono text-[10px] text-ink-faint">{feature.n}</span>
+                  <span className="h-px w-6 translate-y-2 bg-line transition group-hover:bg-wine/40" />
+                </div>
+                <h3 className="mt-5 text-base font-medium">{feature.title}</h3>
+                <p className="mt-2 text-[13px] leading-relaxed text-ink-soft">
+                  {feature.body}
+                </p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Products */}
+      <section id="produk" className="border-y border-line bg-paper-dim/40">
+        <div className="mx-auto w-full max-w-6xl px-6 py-24">
+          <div className="flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <p className="eyebrow">Koleksi</p>
+              <h2 className="mt-5 font-display text-[clamp(2.1rem,4vw,3.1rem)]">
+                Dua cara memiliki LOCARD
+              </h2>
+            </div>
+            <p className="max-w-sm text-sm leading-relaxed text-ink-soft">
+              Pilih card holder siap pakai, atau pasangkan tracker pada barang
+              favorit yang sudah Anda miliki.
+            </p>
+          </div>
+
+          <div className="mt-14 grid gap-6 md:grid-cols-2">
+            {[PRODUCTS.locard, PRODUCTS.service].map((product) => (
+              <article
+                key={product.id}
+                className="group flex flex-col justify-between rounded-2xl border border-line bg-paper p-8 transition hover:border-wine/30 hover:shadow-[0_30px_60px_-45px_rgba(61,19,25,0.5)]"
+              >
+                <div>
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="text-[10px] tracking-[0.24em] text-ink-faint uppercase">
+                        {product.id === "locard" ? "Signature" : "Service"}
+                      </p>
+                      <h3 className="mt-2 font-display text-2xl">{product.name}</h3>
+                    </div>
+                    <p className="font-display text-2xl text-wine">
+                      {formatIDR(product.price)}
+                    </p>
+                  </div>
+
+                  <p className="mt-4 max-w-sm text-[13px] leading-relaxed text-ink-soft">
+                    {product.summary}
+                  </p>
+
+                  <ul className="mt-6 space-y-2 border-t border-line pt-5">
+                    {product.includes.map((item) => (
+                      <li
+                        key={item}
+                        className="flex items-start gap-2.5 text-[13px] text-ink-soft"
+                      >
+                        <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-wine/50" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="mt-8 flex items-center justify-between gap-4">
+                  {product.id === "locard" ? (
+                    <span className="text-[10px] tracking-[0.16em] text-ink-faint uppercase">
+                      DP {formatIDR(product.dp)} via QRIS
+                    </span>
+                  ) : (
+                    <span className="text-[10px] tracking-[0.16em] text-ink-faint uppercase">
+                      Konsultasi via WhatsApp
+                    </span>
+                  )}
+
+                  <Link
+                    href={product.id === "locard" ? "/preorder" : "/preorder?produk=service"}
+                    className="inline-flex items-center gap-2 rounded-full border border-wine/25 px-5 py-2.5 text-[10px] tracking-[0.2em] text-wine uppercase transition hover:bg-wine hover:text-cream"
+                  >
+                    {product.id === "locard" ? "Pilih" : "Tanya"}
+                    <span aria-hidden>→</span>
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How it works */}
+      <section id="cara" className="mx-auto w-full max-w-6xl px-6 py-24">
+        <div className="grid gap-14 md:grid-cols-[0.8fr_1.2fr]">
+          <div>
+            <p className="eyebrow">Cara kerja</p>
+            <h2 className="mt-5 font-display text-[clamp(2.1rem,4vw,3.1rem)] leading-[1.02]">
+              Sederhana sejak
+              <br />
+              hari <span className="font-display-italic text-wine">pertama</span>.
+            </h2>
+          </div>
+
+          <div className="space-y-8">
+            {[
+              {
+                step: "01",
+                title: "Pesan & pilih",
+                body: "Isi formulir pre-order, pilih produk atau layanan, lalu selesaikan DP melalui QRIS.",
+              },
+              {
+                step: "02",
+                title: "Kami siapkan",
+                body: "Tim kami menyiapkan unit Anda dan menghubungi lewat WhatsApp untuk konfirmasi.",
+              },
+              {
+                step: "03",
+                title: "Aktifkan dashboard",
+                body: "Setelah tiba, hubungkan perangkat dan pantau lokasi, alarm, serta zona aman dari perangkat apa pun.",
+              },
+            ].map((item) => (
+              <div key={item.step} className="flex gap-6 border-t border-line pt-6">
+                <span className="font-display text-2xl text-wine/40">{item.step}</span>
+                <div>
+                  <h3 className="text-base font-medium">{item.title}</h3>
+                  <p className="mt-1.5 max-w-md text-[13px] leading-relaxed text-ink-soft">
+                    {item.body}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Proof */}
+      <section className="border-y border-line bg-wine text-cream">
+        <div className="mx-auto grid w-full max-w-6xl gap-10 px-6 py-16 md:grid-cols-3">
           {stats.map((stat) => (
             <div key={stat.value}>
-              <p className="font-display text-4xl text-ink">{stat.value}</p>
-              <p className="mt-2 max-w-xs text-sm leading-relaxed text-ink-soft">
+              <p className="font-display text-4xl text-cream">{stat.value}</p>
+              <p className="mt-3 max-w-xs text-[13px] leading-relaxed text-cream/60">
                 {stat.label}
               </p>
             </div>
@@ -156,103 +361,77 @@ export default async function Home() {
         </div>
       </section>
 
-      <section id="fitur" className="mx-auto w-full max-w-6xl px-6 py-24">
-        <div className="mb-12 flex flex-wrap items-end justify-between gap-6">
+      {/* Contact */}
+      <section id="kontak" className="mx-auto w-full max-w-6xl px-6 py-24">
+        <div className="grid items-center gap-10 rounded-3xl border border-line bg-paper-dim/50 p-10 md:grid-cols-[1.1fr_0.9fr] md:p-14">
           <div>
-            <p className="text-[11px] tracking-[0.22em] text-gold uppercase">Fitur inti</p>
-            <h2 className="mt-3 font-display text-4xl md:text-5xl">
-              Empat hal yang membuatnya berbeda
+            <p className="eyebrow">Contact us</p>
+            <h2 className="mt-4 font-display text-[clamp(2rem,3.6vw,2.8rem)] leading-[1.05]">
+              Ada yang ingin
+              <br />
+              ditanyakan lebih dulu?
             </h2>
-          </div>
-          <p className="max-w-sm text-sm leading-relaxed text-ink-soft">
-            Dirancang dari hasil 21 wawancara: yang paling dibutuhkan bukan sekadar
-            tracker, tapi cara cepat menemukan barang tanpa panik.
-          </p>
-        </div>
-
-        <div className="grid gap-px overflow-hidden rounded-2xl border border-line bg-line md:grid-cols-2">
-          {features.map((feature) => (
-            <article key={feature.title} className="group bg-paper p-8 transition hover:bg-paper-dim/60">
-              <div className="flex items-start justify-between">
-                <h3 className="text-lg font-medium">{feature.title}</h3>
-                <span className="font-mono text-[11px] text-ink-faint">{feature.tag}</span>
-              </div>
-              <p className="mt-3 max-w-sm text-sm leading-relaxed text-ink-soft">
-                {feature.body}
-              </p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section id="cara-kerja" className="border-y border-line bg-ink text-paper">
-        <div className="mx-auto w-full max-w-6xl px-6 py-24">
-          <p className="text-[11px] tracking-[0.22em] text-gold-soft uppercase">Cara kerja</p>
-          <h2 className="mt-3 max-w-2xl font-display text-4xl md:text-5xl">
-            Tiga langkah, tanpa membuka port apa pun di jaringan Anda.
-          </h2>
-
-          <div className="mt-14 grid gap-10 md:grid-cols-3">
-            {[
-              {
-                step: "01",
-                title: "Pasangkan perangkat",
-                body: "Daftarkan card holder di dashboard. Setiap perangkat mendapat API key sendiri untuk mengirim posisi.",
-              },
-              {
-                step: "02",
-                title: "Tracker mengirim posisi",
-                body: "Bridge (ESP32, aplikasi pendamping, atau gateway GPS) mengirim koordinat ke endpoint LOCARD.",
-              },
-              {
-                step: "03",
-                title: "Pantau dari mana saja",
-                body: "Buka dashboard dari perangkat apa pun. Peta, riwayat, alarm, dan notifikasi zona aman langsung tersedia.",
-              },
-            ].map((item) => (
-              <div key={item.step} className="border-t border-paper/15 pt-6">
-                <span className="font-mono text-xs text-gold-soft">{item.step}</span>
-                <h3 className="mt-3 text-lg font-medium">{item.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-paper/65">{item.body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="integrasi" className="mx-auto w-full max-w-6xl px-6 py-24">
-        <div className="grid gap-10 rounded-2xl border border-line bg-paper-dim/40 p-8 md:grid-cols-[0.9fr_1.1fr] md:p-12">
-          <div>
-            <p className="text-[11px] tracking-[0.22em] text-gold uppercase">Integrasi</p>
-            <h2 className="mt-3 font-display text-3xl md:text-4xl">
-              Soal Xiaomi Tag, kami jujur.
-            </h2>
-          </div>
-          <div className="space-y-4 text-sm leading-relaxed text-ink-soft">
-            <p>
-              Xiaomi Tag hanya bekerja lewat jaringan <strong>Apple Find My</strong> dan{" "}
-              <strong>Google Find Hub</strong>. Google secara resmi menyatakan belum
-              menyediakan API/SDK publik untuk Find Hub, dan laporan lokasinya
-              terenkripsi end-to-end dengan kunci milik pemilik.
+            <p className="mt-5 max-w-md text-sm leading-relaxed text-ink-soft">
+              Tim kami siap membantu memilih varian, menjelaskan cara kerja
+              tracker, atau mengatur pemasangan di kota Anda.
             </p>
-            <p>
-              Karena itu LOCARD memakai lapisan <em>provider</em>: posisi bisa datang
-              dari simulator, dari bridge/webhook apa pun, atau dari layanan Find Hub
-              self-hosted yang Anda jalankan sendiri.
-            </p>
-            <p className="rounded-xl border border-line bg-paper px-4 py-3 text-xs text-ink-soft">
-              Artinya: aplikasi web tetap berfungsi penuh hari ini, dan jalur ke
-              hardware asli (atau bridge Find Hub) sudah tersedia tanpa mengubah
-              frontend.
-            </p>
+          </div>
+
+          <div className="space-y-3">
+            <a
+              href={waLink("Halo LOCARD, saya ingin bertanya tentang produk dan layanan.")}
+              target="_blank"
+              rel="noreferrer"
+              className="group flex items-center justify-between rounded-2xl bg-wine px-6 py-5 text-cream transition hover:bg-wine-soft"
+            >
+              <span>
+                <span className="block text-[10px] tracking-[0.24em] text-cream/60 uppercase">
+                  WhatsApp
+                </span>
+                <span className="mt-1 block text-sm font-medium">Contact us</span>
+              </span>
+              <span className="text-lg transition-transform group-hover:translate-x-1">→</span>
+            </a>
+
+            <a
+              href={`mailto:${SITE.email}`}
+              className="flex items-center justify-between rounded-2xl border border-line bg-paper px-6 py-5 transition hover:border-wine/30"
+            >
+              <span>
+                <span className="block text-[10px] tracking-[0.24em] text-ink-faint uppercase">
+                  Email
+                </span>
+                <span className="mt-1 block text-sm font-medium">{SITE.email}</span>
+              </span>
+              <span className="text-lg text-ink-faint">→</span>
+            </a>
           </div>
         </div>
       </section>
 
       <footer className="border-t border-line">
-        <div className="mx-auto flex w-full max-w-6xl flex-col items-start justify-between gap-4 px-6 py-10 text-xs text-ink-faint md:flex-row md:items-center">
-          <p>© 2026 LOCARD · Kelompok 4 · KB4</p>
-          <p className="font-mono">Next.js · SQLite · Leaflet</p>
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-12 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="font-display text-xl tracking-[0.18em]">LOCARD</p>
+            <p className="mt-2 max-w-xs text-[12px] leading-relaxed text-ink-faint">
+              {SITE.tagline}
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-x-8 gap-y-3 text-[11px] tracking-[0.16em] text-ink-soft uppercase">
+            <Link href="/preorder" className="transition hover:text-wine">Pre-order</Link>
+            <a href="#produk" className="transition hover:text-wine">Produk</a>
+            <a href={waLink("Halo LOCARD, saya ingin bertanya.")} target="_blank" rel="noreferrer" className="transition hover:text-wine">
+              WhatsApp
+            </a>
+            <Link href="/login" className="transition hover:text-wine">Dashboard</Link>
+          </div>
+        </div>
+        <div className="mx-auto w-full max-w-6xl px-6 pb-10">
+          <p className="rule mb-6" />
+          <p className="text-[10px] tracking-[0.16em] text-ink-faint uppercase">
+            © 2026 LOCARD · Kelompok 4 · {SITE.city}
+          </p>
         </div>
       </footer>
     </main>

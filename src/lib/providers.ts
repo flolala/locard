@@ -19,7 +19,7 @@ export const PROVIDERS: Record<ProviderId, ProviderMeta> = {
     label: "Simulasi (demo)",
     short: "Mock",
     description:
-      "Posisi dihasilkan oleh simulator bawaan. Dipakai untuk demo dan pengujian alur tanpa hardware.",
+      "Posisi dihasilkan oleh simulator bawaan. Dipakai untuk demo dan pengujian alur tanpa perangkat fisik.",
     selfContained: true,
     needsBridge: false,
     status: "ready",
@@ -30,7 +30,7 @@ export const PROVIDERS: Record<ProviderId, ProviderMeta> = {
     label: "Bridge / Webhook",
     short: "Webhook",
     description:
-      "Perangkat apa pun (ESP32, aplikasi pendamping Android, gateway GPS) mengirim posisi ke endpoint LOCARD dengan API key.",
+      "Perangkat apa pun (modul GPS, aplikasi pendamping, atau gateway) mengirim posisi ke endpoint LOCARD dengan API key.",
     selfContained: true,
     needsBridge: true,
     status: "ready",
@@ -42,17 +42,16 @@ export const PROVIDERS: Record<ProviderId, ProviderMeta> = {
   },
   findhub: {
     id: "findhub",
-    label: "Xiaomi Tag via Find Hub",
-    short: "Find Hub",
+    label: "Tracker eksternal",
+    short: "Eksternal",
     description:
-      "Membaca laporan lokasi dari jaringan Find Hub. Find Hub mengunci laporan dengan kunci milik pemilik (E2E), jadi butuh bridge yang memegang kunci tersebut.",
+      "Membaca laporan lokasi dari layanan pelacakan pihak ketiga melalui bridge yang Anda jalankan sendiri.",
     selfContained: false,
     needsBridge: true,
     status: "needs-bridge",
     notes: [
-      "Google tidak menyediakan API publik untuk Find Hub.",
-      "Laporan terenkripsi end-to-end; kunci hanya ada di perangkat pemilik.",
-      "Bridge harus dijalankan sendiri (self-hosted) dan diisi FINDHUB_BRIDGE_URL.",
+      "Layanan pelacakan pihak ketiga umumnya tidak menyediakan API publik.",
+      "Posisi diteruskan oleh bridge self-hosted ke endpoint LOCARD.",
     ],
   },
 };

@@ -77,3 +77,22 @@ CREATE TABLE IF NOT EXISTS commands (
   delivered_at TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_commands_device ON commands(device_id, created_at DESC);
+
+CREATE TABLE IF NOT EXISTS orders (
+  id          TEXT PRIMARY KEY,
+  code        TEXT NOT NULL UNIQUE,
+  name        TEXT NOT NULL,
+  whatsapp    TEXT NOT NULL,
+  email       TEXT NOT NULL,
+  product     TEXT NOT NULL,
+  qty         INTEGER NOT NULL DEFAULT 1,
+  unit_price  INTEGER NOT NULL,
+  dp_amount   INTEGER NOT NULL,
+  status      TEXT NOT NULL DEFAULT 'awaiting_confirmation',
+  proof_key   TEXT,
+  proof_type  TEXT,
+  proof_size  INTEGER,
+  note        TEXT,
+  created_at  TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_orders_created ON orders(created_at DESC);

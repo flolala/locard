@@ -18,6 +18,12 @@
   "observability": {
     "enabled": true
   },
+  "kv_namespaces": [
+    {
+      "binding": "PROOFS",
+      "id": "04aaefb56f7646768fe83f33cc19acf9"
+    }
+  ],
   "vars": {
     "LOCARD_SEED": "1"
   }

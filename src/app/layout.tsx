@@ -16,12 +16,19 @@ const display = Instrument_Serif({
   variable: "--font-display",
   subsets: ["latin"],
   weight: "400",
+  style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {
   title: "LOCARD — Your premium carry for peace of mind",
   description:
-    "Card holder premium dengan tracker menyatu. Lacak lokasi terakhir, bunyikan alarm, dan tetap tenang — bahkan saat HP ikut hilang.",
+    "Card holder premium dengan tracker terpadu. Lacak lokasi terakhir, bunyikan alarm, dan tetap tenang — bahkan saat ponsel ikut hilang.",
+  openGraph: {
+    title: "LOCARD — Your premium carry for peace of mind",
+    description:
+      "Card holder premium dengan tracker terpadu. Pre-order LOCARD mulai Rp249.000.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
