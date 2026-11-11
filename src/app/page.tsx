@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PRODUCTS, SITE, formatIDR, waLink } from "@/lib/site";
+import { PRODUCTS, SITE, STARTING_PRICE, formatIDR, waLink } from "@/lib/site";
 
 const features = [
   {
@@ -17,17 +17,42 @@ const features = [
     title: "Zona aman",
     body: "Tentukan area aman. LOCARD mengabari begitu card holder keluar dari area tersebut.",
   },
+];
+
+const moments = [
   {
-    n: "04",
-    title: "Mode hilang",
-    body: "Aktifkan halaman penemu berisi kontak Anda, agar siapa pun yang menemukannya bisa menghubungi.",
+    time: "07:40",
+    title: "Kartu akses tidak di tempatnya",
+    body: "Tergelincir dari kantong saat buru-buru berangkat. Baru ketahuan ketika Anda sudah berdiri di depan lift kantor.",
+  },
+  {
+    time: "12:15",
+    title: "Card holder tertinggal di meja kafe",
+    body: "Anda sudah di jalan dan ponsel ada di tangan — tetapi tidak ada cara memastikan di mana benda itu terakhir berada.",
+  },
+  {
+    time: "18:30",
+    title: "Satu barang hilang, satu malam tidak tenang",
+    body: "Menelepon ke sana-sini, kembali ke tempat tadi, dan tetap tanpa jawaban pasti soal keberadaannya.",
   },
 ];
 
-const stats = [
-  { value: "71%", label: "responden menempatkan dompet atau card holder sebagai barang yang paling sering hilang" },
-  { value: "52,4%", label: "memilih card holder dengan tracker menyatu dibanding jasa pasang terpisah" },
-  { value: "n=21", label: "wawancara problem & solution validation" },
+const steps = [
+  {
+    n: "01",
+    title: "Pemesanan",
+    body: "Lengkapi formulir pre-order, tentukan pilihan Anda, dan selesaikan pembayaran awal melalui QRIS.",
+  },
+  {
+    n: "02",
+    title: "Persiapan",
+    body: "Tim kami menyiapkan unit Anda secara personal dan menghubungi Anda melalui WhatsApp untuk konfirmasi.",
+  },
+  {
+    n: "03",
+    title: "Aktivasi",
+    body: "Setibanya di tangan Anda, hubungkan perangkat dan akses lokasi, alarm, serta zona aman melalui dashboard.",
+  },
 ];
 
 export default function Home() {
@@ -45,7 +70,7 @@ export default function Home() {
           <nav className="hidden items-center gap-9 text-[13px] text-ink-soft md:flex">
             <a href="#filosofi" className="transition hover:text-wine">Filosofi</a>
             <a href="#produk" className="transition hover:text-wine">Produk</a>
-            <a href="#cara" className="transition hover:text-wine">Cara kerja</a>
+            <a href="#cara" className="transition hover:text-wine">Proses</a>
             <a href="#kontak" className="transition hover:text-wine">Kontak</a>
           </nav>
 
@@ -67,19 +92,15 @@ export default function Home() {
               Pre-order dibuka · Batch 01
             </p>
 
-            <h1 className="mt-7 font-display text-[clamp(2.9rem,6.2vw,4.8rem)] leading-[0.95]">
-              Your premium carry
-              <br />
-              for <span className="font-display-italic text-wine">peace of mind</span>.
+            <h1 className="mt-7 font-display text-[clamp(2.6rem,5.4vw,4.3rem)] leading-[1.02]">
+              More than just a card holder.
             </h1>
 
-            <p className="mt-8 max-w-md text-[15px] leading-relaxed text-ink-soft">
-              Card holder slim dengan tracker terpadu. Saat kartu penting
-              tertinggal, Anda tahu ke mana harus mencari — bahkan ketika ponsel
-              ikut hilang.
+            <p className="mt-5 max-w-lg font-display-italic text-[clamp(1.15rem,2.2vw,1.5rem)] leading-snug text-wine">
+              Designed to keep your essentials close and easy to find.
             </p>
 
-            <div className="mt-10 flex flex-wrap items-center gap-4">
+            <div className="mt-12 flex flex-wrap items-center gap-4">
               <Link
                 href="/preorder"
                 className="group inline-flex items-center gap-3 rounded-full bg-wine px-8 py-4 text-[11px] font-medium tracking-[0.2em] text-cream uppercase transition hover:bg-wine-soft"
@@ -96,7 +117,7 @@ export default function Home() {
             </div>
 
             <div className="mt-14 flex flex-wrap gap-x-10 gap-y-4 text-[11px] tracking-[0.16em] text-ink-faint uppercase">
-              <span>Mulai {formatIDR(PRODUCTS.locard.price)}</span>
+              <span>Mulai dari {formatIDR(STARTING_PRICE)}</span>
               <span className="text-line">|</span>
               <span>DP {formatIDR(PRODUCTS.locard.dp)} via QRIS</span>
               <span className="text-line">|</span>
@@ -121,9 +142,6 @@ export default function Home() {
                   <div className="flex items-start justify-between">
                     <span className="font-display text-lg tracking-[0.2em] text-cream/90">
                       L
-                    </span>
-                    <span className="text-[7px] tracking-[0.3em] text-cream/40 uppercase">
-                      slim
                     </span>
                   </div>
 
@@ -150,7 +168,7 @@ export default function Home() {
               </div>
 
               <p className="relative mt-8 text-center text-[10px] tracking-[0.28em] text-cream/50 uppercase">
-                leather · aluminium · 9 mm
+                leather · aluminium
               </p>
             </div>
 
@@ -177,15 +195,11 @@ export default function Home() {
       {/* Marquee strip */}
       <div className="border-y border-line bg-paper-dim/60">
         <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-center gap-x-6 gap-y-2 px-6 py-4 text-[9px] tracking-[0.24em] text-ink-soft uppercase sm:text-[10px]">
-          <span>Slim profile</span>
-          <span className="text-wine/30">◆</span>
           <span>Tracker terpadu</span>
           <span className="text-wine/30">◆</span>
           <span>Alarm</span>
           <span className="text-wine/30">◆</span>
           <span>Zona aman</span>
-          <span className="text-wine/30">◆</span>
-          <span>Mode hilang</span>
         </div>
       </div>
 
@@ -199,11 +213,6 @@ export default function Home() {
               <br />
               yang paling <span className="font-display-italic text-wine">nyata</span>.
             </h2>
-            <p className="mt-6 max-w-sm text-sm leading-relaxed text-ink-soft">
-              Kami tidak membuat dompet yang lebih ramai. Kami membuat satu benda
-              yang menyelesaikan satu kekhawatiran: kehilangan kartu penting di
-              tengah hari yang sibuk.
-            </p>
           </div>
 
           <div className="grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2">
@@ -304,60 +313,75 @@ export default function Home() {
       </section>
 
       {/* How it works */}
-      <section id="cara" className="mx-auto w-full max-w-6xl px-6 py-24">
-        <div className="grid gap-14 md:grid-cols-[0.8fr_1.2fr]">
+      <section id="cara" className="mx-auto w-full max-w-6xl px-6 py-28">
+        <div className="grid gap-16 md:grid-cols-[0.8fr_1.2fr]">
           <div>
-            <p className="eyebrow">Cara kerja</p>
+            <p className="eyebrow">Proses</p>
             <h2 className="mt-5 font-display text-[clamp(2.1rem,4vw,3.1rem)] leading-[1.02]">
-              Sederhana sejak
+              Tenang sejak
               <br />
-              hari <span className="font-display-italic text-wine">pertama</span>.
+              langkah <span className="font-display-italic text-wine">pertama</span>.
             </h2>
+            <p className="mt-6 max-w-xs text-[13px] leading-relaxed text-ink-soft">
+              Tiga tahap yang kami dampingi sepenuhnya, dari pemesanan hingga
+              perangkat aktif di tangan Anda.
+            </p>
           </div>
 
-          <div className="space-y-8">
-            {[
-              {
-                step: "01",
-                title: "Pesan & pilih",
-                body: "Isi formulir pre-order, pilih produk atau layanan, lalu selesaikan DP melalui QRIS.",
-              },
-              {
-                step: "02",
-                title: "Kami siapkan",
-                body: "Tim kami menyiapkan unit Anda dan menghubungi lewat WhatsApp untuk konfirmasi.",
-              },
-              {
-                step: "03",
-                title: "Aktifkan dashboard",
-                body: "Setelah tiba, hubungkan perangkat dan pantau lokasi, alarm, serta zona aman dari perangkat apa pun.",
-              },
-            ].map((item) => (
-              <div key={item.step} className="flex gap-6 border-t border-line pt-6">
-                <span className="font-display text-2xl text-wine/40">{item.step}</span>
-                <div>
-                  <h3 className="text-base font-medium">{item.title}</h3>
-                  <p className="mt-1.5 max-w-md text-[13px] leading-relaxed text-ink-soft">
+          <ol className="relative">
+            <span
+              aria-hidden
+              className="absolute top-4 bottom-4 left-[1.125rem] w-px bg-line"
+            />
+
+            {steps.map((item) => (
+              <li key={item.n} className="relative flex gap-7 pb-12 last:pb-0">
+                <span className="relative z-10 grid h-9 w-9 shrink-0 place-items-center rounded-full border border-line bg-paper font-display text-[13px] text-wine">
+                  {item.n}
+                </span>
+                <div className="pt-1.5">
+                  <h3 className="font-display text-xl leading-snug">{item.title}</h3>
+                  <p className="mt-2 max-w-md text-[13px] leading-relaxed text-ink-soft">
                     {item.body}
                   </p>
                 </div>
-              </div>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </section>
 
-      {/* Proof */}
+      {/* Pain points */}
       <section className="border-y border-line bg-wine text-cream">
-        <div className="mx-auto grid w-full max-w-6xl gap-10 px-6 py-16 md:grid-cols-3">
-          {stats.map((stat) => (
-            <div key={stat.value}>
-              <p className="font-display text-4xl text-cream">{stat.value}</p>
-              <p className="mt-3 max-w-xs text-[13px] leading-relaxed text-cream/60">
-                {stat.label}
-              </p>
-            </div>
-          ))}
+        <div className="mx-auto w-full max-w-6xl px-6 py-20">
+          <p className="text-[10px] tracking-[0.24em] text-cream/50 uppercase">
+            Tanpa LOCARD
+          </p>
+          <h2 className="mt-5 max-w-2xl font-display text-[clamp(1.9rem,3.4vw,2.7rem)] leading-[1.05]">
+            Tiga momen dalam sehari yang membuat Anda
+            <br />
+            <span className="font-display-italic text-cream/70">kehilangan waktu</span>.
+          </h2>
+
+          <div className="mt-14 grid gap-px overflow-hidden rounded-2xl border border-cream/15 bg-cream/15 md:grid-cols-3">
+            {moments.map((moment) => (
+              <article key={moment.time} className="bg-wine p-8">
+                <p className="font-mono text-[10px] tracking-[0.2em] text-cream/40">
+                  {moment.time}
+                </p>
+                <h3 className="mt-5 font-display text-xl leading-snug">
+                  {moment.title}
+                </h3>
+                <p className="mt-3 text-[13px] leading-relaxed text-cream/60">
+                  {moment.body}
+                </p>
+              </article>
+            ))}
+          </div>
+
+          <p className="mt-10 max-w-lg text-[13px] leading-relaxed text-cream/60">
+            LOCARD menjawab satu hal saja: di mana benda itu sekarang.
+          </p>
         </div>
       </section>
 
@@ -373,7 +397,7 @@ export default function Home() {
             </h2>
             <p className="mt-5 max-w-md text-sm leading-relaxed text-ink-soft">
               Tim kami siap membantu memilih varian, menjelaskan cara kerja
-              tracker, atau mengatur pemasangan di kota Anda.
+              tracker, atau mengatur pemasangan.
             </p>
           </div>
 

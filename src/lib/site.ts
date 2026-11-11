@@ -1,6 +1,6 @@
 export const SITE = {
   name: "LOCARD",
-  tagline: "Your premium carry for peace of mind.",
+  tagline: "More than just a card holder.",
   /** Ganti dengan nomor WhatsApp bisnis Anda (format internasional, tanpa +). */
   whatsapp: process.env.NEXT_PUBLIC_WHATSAPP ?? "6281234567890",
   email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "hello@locard.id",
@@ -28,12 +28,12 @@ export const PRODUCTS: Record<
     price: 249_000,
     dp: 50_000,
     summary:
-      "Card holder slim dengan tracker terpadu dan alarm. Termasuk akses dashboard LOCARD.",
+      "Card holder dengan tracker terpadu dan alarm. Termasuk akses dashboard LOCARD.",
     includes: [
-      "Card holder premium, profil slim",
+      "Card holder premium",
       "Tracker terpadu + alarm",
       "Akses dashboard dari perangkat apa pun",
-      "Panduan pemakaian & garansi 1 tahun",
+      "Panduan pemakaian",
     ],
   },
   service: {
@@ -55,6 +55,11 @@ export const PRODUCTS: Record<
 export function formatIDR(value: number): string {
   return `Rp${value.toLocaleString("id-ID")}`;
 }
+
+/** Harga terendah dari semua produk — dipakai untuk copy "mulai dari". */
+export const STARTING_PRICE = Math.min(
+  ...Object.values(PRODUCTS).map((product) => product.price),
+);
 
 export function waLink(message?: string): string {
   const base = `https://wa.me/${SITE.whatsapp.replace(/[^\d]/g, "")}`;

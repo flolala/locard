@@ -20,13 +20,13 @@ const display = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  title: "LOCARD — Your premium carry for peace of mind",
+  title: "LOCARD — More than just a card holder",
   description:
     "Card holder premium dengan tracker terpadu. Lacak lokasi terakhir, bunyikan alarm, dan tetap tenang — bahkan saat ponsel ikut hilang.",
   openGraph: {
-    title: "LOCARD — Your premium carry for peace of mind",
+    title: "LOCARD — More than just a card holder",
     description:
-      "Card holder premium dengan tracker terpadu. Pre-order LOCARD mulai Rp249.000.",
+      "Card holder premium dengan tracker terpadu. Pre-order LOCARD mulai Rp199.000.",
     type: "website",
   },
 };
