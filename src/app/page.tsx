@@ -1,5 +1,25 @@
 import Link from "next/link";
+import HeroCarousel, { type HeroSlide } from "@/components/hero-carousel";
 import { PRODUCTS, SITE, STARTING_PRICE, formatIDR, waLink } from "@/lib/site";
+
+
+const HERO_SLIDES: HeroSlide[] = [
+  {
+    src: "/products/hero-1.jpg",
+    alt: "Card holder LOCARD warna burgundy di dalam kotak premium",
+    caption: "Signature Burgundy",
+  },
+  {
+    src: "/products/hero-2.jpg",
+    alt: "Bagian dalam card holder LOCARD dengan slot kartu",
+    caption: "Sembilan slot kartu",
+  },
+  {
+    src: "/products/hero-3.jpg",
+    alt: "Tiga pilihan warna card holder LOCARD",
+    caption: "Tiga pilihan warna",
+  },
+];
 
 const features = [
   {
@@ -126,50 +146,9 @@ export default function Home() {
           </div>
 
           <div className="relative mx-auto w-full max-w-sm">
-            <div className="relative overflow-hidden rounded-t-[14rem] rounded-b-[2rem] bg-gradient-to-b from-wine to-wine-deep px-8 pt-14 pb-10 shadow-[0_50px_90px_-50px_rgba(61,19,25,0.7)]">
-              <div className="absolute inset-x-6 top-6 bottom-6 rounded-t-[12rem] rounded-b-[1.5rem] border border-cream/15" />
-
-              <p className="relative text-center text-[9px] tracking-[0.4em] text-cream/60 uppercase">
-                Locard · signature
-              </p>
-
-              {/* card holder illustration */}
-              <div className="relative mx-auto mt-8 aspect-[3/4] w-[74%]">
-                <div className="absolute inset-0 translate-x-2 translate-y-2 rounded-[1.4rem] bg-wine-deep/60" />
-                <div className="relative flex h-full w-full flex-col justify-between overflow-hidden rounded-[1.4rem] bg-gradient-to-br from-[#7a3139] via-[#6d2932] to-[#4a1b21] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
-                  <div className="pointer-events-none absolute inset-3 rounded-[1rem] border border-dashed border-cream/20" />
-
-                  <div className="flex items-start justify-between">
-                    <span className="font-display text-lg tracking-[0.2em] text-cream/90">
-                      L
-                    </span>
-                  </div>
-
-                  <div className="space-y-2">
-                    {[0, 1, 2].map((i) => (
-                      <div
-                        key={i}
-                        className="h-2 rounded-full bg-cream/15"
-                        style={{ width: `${92 - i * 12}%` }}
-                      />
-                    ))}
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-[7px] tracking-[0.3em] text-cream/40 uppercase">
-                      tracker inside
-                    </span>
-                    <span className="relative grid h-2.5 w-2.5 place-items-center">
-                      <span className="absolute inset-0 rounded-full bg-cream/20" />
-                      <span className="h-1 w-1 rounded-full bg-cream" />
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <p className="relative mt-8 text-center text-[10px] tracking-[0.28em] text-cream/50 uppercase">
-                leather · aluminium
-              </p>
+            <div className="relative aspect-[4/5] overflow-hidden rounded-t-[7rem] rounded-b-[2rem] bg-wine-deep shadow-[0_50px_90px_-50px_rgba(61,19,25,0.7)]">
+              <HeroCarousel slides={HERO_SLIDES} />
+              <div className="pointer-events-none absolute inset-0 rounded-t-[7rem] rounded-b-[2rem] ring-1 ring-inset ring-cream/15" />
             </div>
 
             <div className="mt-4 grid grid-cols-2 gap-3">

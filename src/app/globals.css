@@ -131,6 +131,15 @@ body {
   animation: pulse-ring 2.4s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
 }
 
+@keyframes slide-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
 @keyframes rise {
   from {
     opacity: 0;
