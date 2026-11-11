@@ -15,7 +15,7 @@ const features = [
   {
     n: "03",
     title: "Zona aman",
-    body: "Tentukan area aman. LOCARD mengabari begitu card holder keluar dari area tersebut.",
+    body: "LOCARD memberikan notifikasi begitu card holder menjauh dari jangkauan Anda.",
   },
 ];
 
