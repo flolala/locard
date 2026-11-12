@@ -3,7 +3,7 @@ export const SITE = {
   tagline: "More than just a card holder.",
   /** Ganti dengan nomor WhatsApp bisnis Anda (format internasional, tanpa +). */
   whatsapp: process.env.NEXT_PUBLIC_WHATSAPP ?? "6281234567890",
-  email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "hello@locard.id",
+  email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "locardcompany@gmail.com",
   city: "Jakarta, Indonesia",
   /** URL gambar QRIS. Kosongkan untuk memakai QR demo. */
   qrisImage: process.env.NEXT_PUBLIC_QRIS_IMAGE ?? "",

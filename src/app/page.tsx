@@ -14,7 +14,7 @@ const HERO_SLIDES: HeroSlide[] = [
   {
     src: "/products/hero-2.jpg",
     alt: "Bagian dalam card holder LOCARD dengan slot kartu",
-    caption: "Sembilan slot kartu",
+    caption: "Enam slot kartu",
   },
   {
     src: "/products/hero-3.jpg",
