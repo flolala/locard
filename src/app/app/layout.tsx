@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LogoMark from "@/components/logo-mark";
 import { requireUser } from "@/lib/auth";
 import LogoutButton from "@/components/logout-button";
 
@@ -11,9 +12,7 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-6 py-4">
           <div className="flex items-center gap-8">
             <Link href="/app" className="flex items-center gap-3">
-              <span className="grid h-8 w-8 place-items-center rounded-full bg-ink text-[11px] font-semibold tracking-[0.15em] text-paper">
-                LC
-              </span>
+              <LogoMark className="h-8 w-8" />
               <span className="text-sm font-semibold tracking-[0.32em]">LOCARD</span>
             </Link>
             <nav className="hidden items-center gap-6 text-sm text-ink-soft md:flex">

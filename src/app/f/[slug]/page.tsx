@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LogoMark from "@/components/logo-mark";
 import { notFound } from "next/navigation";
 import MapShell from "@/components/map-shell";
 import { formatDateTime, relativeTime } from "@/lib/geo";
@@ -27,9 +28,7 @@ export default async function FoundPage({
     <main className="grain flex flex-1 flex-col">
       <header className="mx-auto flex w-full max-w-3xl items-center justify-between px-6 py-6">
         <Link href="/" className="flex items-center gap-3">
-          <span className="grid h-8 w-8 place-items-center rounded-full bg-ink text-[11px] font-semibold tracking-[0.15em] text-paper">
-            LC
-          </span>
+          <LogoMark className="h-8 w-8" />
           <span className="text-sm font-semibold tracking-[0.32em]">LOCARD</span>
         </Link>
         <span className="rounded-full border border-line px-3 py-1 text-[10px] tracking-[0.16em] text-ink-faint uppercase">

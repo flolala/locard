@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LogoMark from "@/components/logo-mark";
 import { redirect } from "next/navigation";
 import AuthForm from "@/components/auth-form";
 import { getSession } from "@/lib/auth";
@@ -11,9 +12,7 @@ export default async function RegisterPage() {
     <main className="grain grid flex-1 place-items-center px-6 py-16">
       <div className="w-full max-w-sm">
         <Link href="/" className="mb-10 flex items-center gap-3">
-          <span className="grid h-8 w-8 place-items-center rounded-full bg-ink text-[11px] font-semibold tracking-[0.15em] text-paper">
-            LC
-          </span>
+          <LogoMark className="h-8 w-8" />
           <span className="text-sm font-semibold tracking-[0.32em]">LOCARD</span>
         </Link>
 

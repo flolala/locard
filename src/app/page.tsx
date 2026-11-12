@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LogoMark from "@/components/logo-mark";
 import type { CSSProperties, ReactNode } from "react";
 import HeroCarousel, { type HeroSlide } from "@/components/hero-carousel";
 import ScrollEffects from "@/components/scroll-effects";
@@ -109,7 +110,8 @@ export default function Home() {
         className="site-header sticky top-0 z-40 border-b border-line/70 bg-paper/85 backdrop-blur-md"
       >
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5">
-          <Link href="/" className="flex items-baseline gap-2.5">
+          <Link href="/" className="flex items-center gap-3">
+            <LogoMark className="h-9 w-9" />
             <span className="font-display text-2xl tracking-[0.18em]">LOCARD</span>
             <span className="hidden text-[9px] tracking-[0.3em] text-ink-faint uppercase sm:inline">
               est. 2026

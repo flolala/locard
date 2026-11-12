@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LogoMark from "@/components/logo-mark";
 import PreorderForm from "@/components/preorder-form";
 import { PRODUCTS, SITE, formatIDR, waLink } from "@/lib/site";
 import type { ProductId } from "@/lib/site";
@@ -20,7 +21,8 @@ export default async function PreorderPage({
     <main className="flex-1">
       <header className="border-b border-line/70 bg-paper/85 backdrop-blur-md">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5">
-          <Link href="/" className="flex items-baseline gap-2.5">
+          <Link href="/" className="flex items-center gap-3">
+            <LogoMark className="h-9 w-9" />
             <span className="font-display text-2xl tracking-[0.18em]">LOCARD</span>
           </Link>
           <Link
