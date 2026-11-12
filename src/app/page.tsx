@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import HeroCarousel, { type HeroSlide } from "@/components/hero-carousel";
 import ScrollEffects from "@/components/scroll-effects";
-import { PRODUCTS, SITE, STARTING_PRICE, formatIDR, waLink } from "@/lib/site";
+import { PRODUCTS, SITE, formatIDR, waLink } from "@/lib/site";
 
 
 const HERO_SLIDES: HeroSlide[] = [
