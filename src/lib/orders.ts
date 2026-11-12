@@ -82,6 +82,65 @@ export function getOrderByCode(code: string): Promise<OrderRow | undefined> {
   return first<OrderRow>("SELECT * FROM orders WHERE code = ?", [code]);
 }
 
+export const ORDER_STATUSES = [
+  "awaiting_confirmation",
+  "confirmed",
+  "completed",
+  "cancelled",
+] as const;
+
+export type OrderStatus = (typeof ORDER_STATUSES)[number];
+
+export function isOrderStatus(value: string): value is OrderStatus {
+  return (ORDER_STATUSES as readonly string[]).includes(value);
+}
+
+export function listOrdersFiltered(opts: {
+  status?: string;
+  limit?: number;
+}): Promise<OrderRow[]> {
+  const limit = opts.limit ?? 200;
+  if (opts.status && isOrderStatus(opts.status)) {
+    return all<OrderRow>(
+      "SELECT * FROM orders WHERE status = ? ORDER BY created_at DESC LIMIT ?",
+      [opts.status, limit],
+    );
+  }
+  return all<OrderRow>("SELECT * FROM orders ORDER BY created_at DESC LIMIT ?", [
+    limit,
+  ]);
+}
+
+export async function updateOrderStatus(code: string, status: OrderStatus) {
+  await run("UPDATE orders SET status = ? WHERE code = ?", [status, code]);
+}
+
+export type OrderStats = {
+  total: number;
+  awaiting: number;
+  confirmed: number;
+  completed: number;
+  cancelled: number;
+  dp: number;
+};
+
+export async function orderStats(): Promise<OrderStats> {
+  const row = await first<OrderStats>(
+    `SELECT
+       COUNT(*) AS total,
+       COALESCE(SUM(CASE WHEN status = 'awaiting_confirmation' THEN 1 ELSE 0 END), 0) AS awaiting,
+       COALESCE(SUM(CASE WHEN status = 'confirmed' THEN 1 ELSE 0 END), 0) AS confirmed,
+       COALESCE(SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END), 0) AS completed,
+       COALESCE(SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END), 0) AS cancelled,
+       COALESCE(SUM(CASE WHEN status <> 'cancelled' THEN dp_amount ELSE 0 END), 0) AS dp
+     FROM orders`,
+  );
+
+  return (
+    row ?? { total: 0, awaiting: 0, confirmed: 0, completed: 0, cancelled: 0, dp: 0 }
+  );
+}
+
 export function listOrders(limit = 50): Promise<OrderRow[]> {
   return all<OrderRow>(
     "SELECT * FROM orders ORDER BY created_at DESC LIMIT ?",

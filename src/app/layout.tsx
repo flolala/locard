@@ -19,14 +19,18 @@ const display = Instrument_Serif({
   style: ["normal", "italic"],
 });
 
+/** Cloudflare Web Analytics site tag (public token, safe to expose). */
+const CF_ANALYTICS_TOKEN =
+  process.env.NEXT_PUBLIC_CF_ANALYTICS_TOKEN ?? "da62f0340962454c906d686ca28a4d71";
+
 export const metadata: Metadata = {
-  title: "LOCARD",
+  title: "LOCARD - More than just a card holder",
   description:
     "Card holder premium dengan tracker terpadu. Lacak lokasi terakhir, bunyikan alarm, dan tetap tenang — bahkan saat ponsel ikut hilang.",
   openGraph: {
-    title: "LOCARD — Your premium carry for peace of mind.",
+    title: "LOCARD - More than just a card holder",
     description:
-      "Card holder premium dengan tracker terpadu. Pre-order LOCARD mulai Rp199.000.",
+      "Card holder premium dengan tracker terpadu. Pre-order LOCARD mulai Rp249.000.",
     type: "website",
   },
 };
@@ -36,10 +40,17 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="id"
       data-scroll-behavior="smooth"
-      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} ${display.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-paper text-ink">{children}</body>
+      <body className="min-h-full flex flex-col bg-paper text-ink">
+        {children}
+
+        <script
+          defer
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          data-cf-beacon={JSON.stringify({ token: CF_ANALYTICS_TOKEN })}
+        />
+      </body>
     </html>
   );
 }
