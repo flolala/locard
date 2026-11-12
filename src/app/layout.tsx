@@ -19,9 +19,9 @@ const display = Instrument_Serif({
   style: ["normal", "italic"],
 });
 
-/** Cloudflare Web Analytics site tag (public token, safe to expose). */
+/** Cloudflare Web Analytics site token (public, safe to expose). */
 const CF_ANALYTICS_TOKEN =
-  process.env.NEXT_PUBLIC_CF_ANALYTICS_TOKEN ?? "da62f0340962454c906d686ca28a4d71";
+  process.env.NEXT_PUBLIC_CF_ANALYTICS_TOKEN ?? "a1a69dfa6c4b40fa90578726304c7042";
 
 export const metadata: Metadata = {
   title: "LOCARD - More than just a card holder",
@@ -46,7 +46,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         {children}
 
         <script
-          defer
+          type="module"
           src="https://static.cloudflareinsights.com/beacon.min.js"
           data-cf-beacon={JSON.stringify({ token: CF_ANALYTICS_TOKEN })}
         />
