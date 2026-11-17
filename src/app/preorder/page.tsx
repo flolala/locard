@@ -56,8 +56,8 @@ export default async function PreorderPage({
 
               <div className="mt-6 max-w-2xl rounded-2xl border border-wine/20 bg-wine/[0.04] px-5 py-4">
                 <p className="text-[13px] leading-relaxed text-ink-soft">
-                  Untuk pemesanan <span className="font-medium text-ink">LOCARD Complete</span>,
-                  pembayaran uang muka (DP) sebesar{" "}
+                  Untuk pemesanan <span className="font-medium text-ink">LOCARD</span>,
+                  terdapat pembayaran uang muka (DP) sebesar{" "}
                   <span className="font-medium text-wine">
                     {formatIDR(PRODUCTS.locard.dp)}
                   </span>{" "}
@@ -115,7 +115,7 @@ export default async function PreorderPage({
               </div>
 
               <p className="mt-4 px-1 text-[10px] leading-relaxed text-ink-faint">
-                Data Anda hanya digunakan untuk memproses pesanan dan dihubungi oleh
+                  <span className="text-wine">*</span> Data Anda hanya digunakan untuk memproses pesanan dan dihubungi oleh
                 tim LOCARD.
               </p>
             </aside>

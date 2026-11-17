@@ -119,12 +119,11 @@ export default function Home() {
           </Link>
 
           <nav className="hidden items-center gap-9 text-[13px] text-ink-soft md:flex">
-            <a href="#filosofi" data-nav="filosofi" className="nav-link transition hover:text-wine">Filosofi</a>
-            <a href="#produk" data-nav="produk" className="nav-link transition hover:text-wine">Produk</a>
-            <a href="#cara" data-nav="cara" className="nav-link transition hover:text-wine">Proses</a>
-            <a href="#kontak" data-nav="kontak" className="nav-link transition hover:text-wine">Kontak</a>
+            <a href="#about" data-nav="about" className="nav-link transition hover:text-wine">About us</a>
+            <a href="#produk" data-nav="produk" className="nav-link transition hover:text-wine">Product</a>
+            <a href="#cara" data-nav="cara" className="nav-link transition hover:text-wine">Process</a>
+            <a href="#kontak" data-nav="kontak" className="nav-link transition hover:text-wine">Contact</a>
           </nav>
-
           <Link
             href="/preorder"
             className="rounded-full bg-wine px-6 py-2.5 text-[11px] font-medium tracking-[0.18em] text-cream uppercase transition hover:bg-wine-soft"
@@ -145,7 +144,7 @@ export default function Home() {
           <div className="hero-copy">
             <p className="eyebrow rise rise-1 flex items-center gap-3">
               <span className="h-px w-8 bg-wine/40" />
-              Pre-order dibuka · Batch 01
+              pre-order batch 1 is open now
             </p>
 
             <h1 className="rise rise-2 mt-7 font-display text-[clamp(2.6rem,5.4vw,4.3rem)] leading-[1.02]">
@@ -168,7 +167,7 @@ export default function Home() {
                 href="#produk"
                 className="inline-flex items-center gap-2 border-b border-ink/20 pb-1 text-[11px] tracking-[0.2em] text-ink-soft uppercase transition hover:border-wine hover:text-wine"
               >
-                Lihat koleksi
+                Explore LOCARD
               </a>
             </div>
           </div>
@@ -227,10 +226,10 @@ export default function Home() {
       </div>
 
       {/* Philosophy / features */}
-      <section id="filosofi" className="mx-auto w-full max-w-6xl px-6 py-24">
+      <section id="about" className="mx-auto w-full max-w-6xl px-6 py-24">
         <div className="grid gap-12 md:grid-cols-[0.85fr_1.15fr]">
           <div data-reveal="lines">
-            <p className="eyebrow">Filosofi</p>
+            <p className="eyebrow">About Us</p>
             <h2 className="mt-5 font-display text-[clamp(2.1rem,4vw,3.1rem)] leading-[1.02]">
               <Lines
                 lines={[
@@ -272,9 +271,16 @@ export default function Home() {
         <div className="mx-auto w-full max-w-6xl px-6 py-24">
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div data-reveal="lines">
-              <p className="eyebrow">Koleksi</p>
+              <p className="eyebrow">Product</p>
               <h2 className="mt-5 font-display text-[clamp(2.1rem,4vw,3.1rem)]">
-                <Lines lines={["Dua cara memiliki LOCARD"]} />
+              <Lines
+  lines={[
+    "Hadirkan ketenangan",
+    <>
+      dengan <span className="font-display-italic text-wine">cara Anda</span>
+    </>,
+  ]}
+/>
               </h2>
             </div>
             <p
@@ -337,7 +343,11 @@ export default function Home() {
 
                   <Link
                     href={product.id === "locard" ? "/preorder" : "/preorder?produk=service"}
-                    className="inline-flex items-center gap-2 rounded-full border border-wine/25 px-5 py-2.5 text-[10px] tracking-[0.2em] text-wine uppercase transition hover:bg-wine hover:text-cream"
+                   className={`inline-flex items-center gap-2 rounded-full px-6 py-3 text-[10px] font-medium tracking-[0.2em] uppercase transition ${
+  product.id === "locard"
+    ? "bg-wine text-cream shadow-[0_14px_30px_-18px_rgba(86,28,36,0.9)] hover:bg-wine-soft"
+    : "bg-cream text-wine ring-1 ring-inset ring-wine/20 hover:bg-paper-deep"
+}`}
                   >
                     {product.id === "locard" ? "Pilih" : "Tanya"}
                     <span aria-hidden>→</span>
@@ -354,7 +364,7 @@ export default function Home() {
         <div className="grid gap-16 md:grid-cols-[0.8fr_1.2fr]">
           <div className="md:sticky md:top-28 md:self-start">
             <div data-reveal="lines">
-              <p className="eyebrow">Proses</p>
+              <p className="eyebrow">Process</p>
               <h2 className="mt-5 font-display text-[clamp(2.1rem,4vw,3.1rem)] leading-[1.02]">
                 <Lines
                   lines={[
@@ -421,10 +431,10 @@ export default function Home() {
 
         <div className="relative mx-auto w-full max-w-6xl px-6 py-20">
           <div data-reveal="lines">
-            <p className="text-[10px] tracking-[0.24em] text-cream/50 uppercase">
-              Tanpa LOCARD
+            <p className="text-xs font-medium tracking-[0.2em] text-cream/100 uppercase">
+               Tanpa LOCARD
             </p>
-            <h2 className="mt-5 max-w-2xl font-display text-[clamp(1.9rem,3.4vw,2.7rem)] leading-[1.05]">
+            <h2 className="mt-5 max-w-4xl font-display text-[clamp(1.9rem,3.4vw,2.7rem)] leading-[1.05]">
               <Lines
                 lines={[
                   "Tiga momen dalam sehari yang membuat Anda",
@@ -533,11 +543,11 @@ export default function Home() {
 
           <div className="flex flex-wrap gap-x-8 gap-y-3 text-[11px] tracking-[0.16em] text-ink-soft uppercase">
             <Link href="/preorder" className="nav-link transition hover:text-wine">Pre-order</Link>
-            <a href="#produk" className="nav-link transition hover:text-wine">Produk</a>
+            <a href="#produk" className="nav-link transition hover:text-wine">Product</a>
             <a href={waLink("Halo LOCARD, saya ingin bertanya.")} target="_blank" rel="noreferrer" className="nav-link transition hover:text-wine">
-              WhatsApp
+              Contact us
             </a>
-            <Link href="/login" className="nav-link transition hover:text-wine">Dashboard</Link>
+           <Link href="/login" className="nav-link transition hover:text-wine">Dashboard</Link>
           </div>
         </div>
         <div className="mx-auto w-full max-w-6xl px-6 pb-10">

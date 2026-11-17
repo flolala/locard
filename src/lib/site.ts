@@ -2,7 +2,7 @@ export const SITE = {
   name: "LOCARD",
   tagline: "More than just a card holder.",
   /** Ganti dengan nomor WhatsApp bisnis Anda (format internasional, tanpa +). */
-  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP ?? "6281234567890",
+  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP ?? "6282113387830",
   email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "locardcompany@gmail.com",
   city: "Jakarta, Indonesia",
   /** URL gambar QRIS. Kosongkan untuk memakai QR demo. */
@@ -28,7 +28,7 @@ export const PRODUCTS: Record<
     price: 249_000,
     dp: 50_000,
     summary:
-      "Card holder dengan tracker terpadu dan alarm. Termasuk akses dashboard LOCARD.",
+      "Smart card holder untuk menjaga kartu-kartu terpenting Anda tetap aman setiap saat.",
     includes: [
       "Card holder premium",
       "Tracker terpadu + alarm",

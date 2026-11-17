@@ -160,7 +160,7 @@ export default function PreorderForm({ initialProduct }: { initialProduct: Produ
 
       {/* 02 — Produk */}
       <section>
-        <SectionTitle index="02" title="Pilih produk / layanan" />
+        <SectionTitle index="02" title="Pilih produk / layanan" required/>
         <div className="mt-5 grid gap-3">
           {(["locard", "service"] as ProductId[]).map((id) => {
             const item = PRODUCTS[id];
@@ -216,7 +216,7 @@ export default function PreorderForm({ initialProduct }: { initialProduct: Produ
           <SectionTitle
             index="03"
             title="Pembayaran DP"
-            hint={`DP ${formatIDR(PRODUCTS.locard.dp)} per unit via QRIS.`}
+            required hint={`DP ${formatIDR(PRODUCTS.locard.dp)} per unit via QRIS.`}
           />
 
           <div className="mt-5 grid gap-6 lg:grid-cols-[1fr_260px]">
@@ -224,7 +224,7 @@ export default function PreorderForm({ initialProduct }: { initialProduct: Produ
               <div className="flex items-center justify-between rounded-2xl border border-line bg-paper px-5 py-4">
                 <div>
                   <p className="text-[10px] tracking-[0.2em] text-ink-faint uppercase">
-                    Jumlah pemesanan
+                    Jumlah pemesanan <span className="text-wine">*</span>
                   </p>
                   <p className="mt-1 text-[12px] text-ink-soft">
                     Maksimal 20 unit per formulir.
@@ -368,10 +368,10 @@ export default function PreorderForm({ initialProduct }: { initialProduct: Produ
           className="rounded-full bg-wine px-8 py-3.5 text-[11px] font-medium tracking-[0.2em] text-cream uppercase transition hover:bg-wine-soft disabled:opacity-60"
         >
           {state === "submitting"
-            ? "Mengirim…"
+            ? "Submitting…"
             : product === "service"
               ? "Lanjut via WhatsApp"
-              : "Kirim pesanan"}
+              : "Submit"}
         </button>
       </div>
     </form>
@@ -382,22 +382,24 @@ function SectionTitle({
   index,
   title,
   hint,
+  required,
 }: {
   index: string;
   title: string;
   hint?: string;
+  required?: boolean;
 }) {
   return (
     <div className="flex items-baseline justify-between gap-4 border-b border-line pb-3">
       <h2 className="flex items-baseline gap-3 text-sm font-medium">
         <span className="font-mono text-[10px] text-wine/60">{index}</span>
         {title}
+        {required ? <span className="text-wine">*</span> : null}
       </h2>
       {hint ? <span className="text-[10px] text-ink-faint">{hint}</span> : null}
     </div>
   );
 }
-
 function Field({
   label,
   className = "",
@@ -406,7 +408,7 @@ function Field({
   return (
     <label className={`block ${className}`}>
       <span className="mb-1.5 block text-[10px] tracking-[0.2em] text-ink-faint uppercase">
-        {label}
+        {label} <span className="text-wine">*</span>
       </span>
       <input
         {...props}
