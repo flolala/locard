@@ -19,9 +19,10 @@ const display = Instrument_Serif({
   style: ["normal", "italic"],
 });
 
-/** Cloudflare Web Analytics site token (public, safe to expose). */
-const CF_ANALYTICS_TOKEN =
+/** Cloudflare Web Analytics site tokens (public, safe to expose). */
+const CF_ANALYTICS_WORKERS =
   process.env.NEXT_PUBLIC_CF_ANALYTICS_TOKEN ?? "a1a69dfa6c4b40fa90578726304c7042";
+const CF_ANALYTICS_SITE = "6d0c3f15313c45abb6a251bf9be284da";
 
 export const metadata: Metadata = {
   title: "LOCARD - More than just a card holder",
@@ -46,9 +47,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         {children}
 
         <script
-          type="module"
-          src="https://static.cloudflareinsights.com/beacon.min.js"
-          data-cf-beacon={JSON.stringify({ token: CF_ANALYTICS_TOKEN })}
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var h=location.hostname;var t=(h==="locard.site"||h.slice(-12)===".locard.site")?"${CF_ANALYTICS_SITE}":"${CF_ANALYTICS_WORKERS}";var s=document.createElement("script");s.src="https://static.cloudflareinsights.com/beacon.min.js";s.defer=true;s.setAttribute("data-cf-beacon",JSON.stringify({token:t}));(document.head||document.documentElement).appendChild(s)}catch(e){}})();`,
+          }}
         />
       </body>
     </html>
