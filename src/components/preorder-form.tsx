@@ -293,10 +293,12 @@ export default function PreorderForm({ initialProduct }: { initialProduct: Produ
                 Pindai untuk membayar
               </p>
 
-              <div className="mx-auto mt-4 w-full max-w-[190px] overflow-hidden rounded-xl border border-line bg-paper p-2">
+              <div className="mx-auto mt-4 w-full max-w-[280px] overflow-hidden rounded-xl border border-line bg-paper p-2">
                 {SITE.qrisImage ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={SITE.qrisImage} alt="QRIS pembayaran LOCARD" className="w-full" />
+                  <a href={SITE.qrisImage} target="_blank" rel="noreferrer" className="block">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={SITE.qrisImage} alt="QRIS pembayaran LOCARD" className="w-full" />
+                  </a>
                 ) : qr ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={qr} alt="QR demo" className="w-full" />
@@ -312,6 +314,12 @@ export default function PreorderForm({ initialProduct }: { initialProduct: Produ
                   ? "QRIS resmi LOCARD"
                   : "QR demo — belum terhubung ke QRIS pembayaran"}
               </p>
+
+              {SITE.qrisImage ? (
+                <p className="mt-1 text-[10px] text-ink-faint">
+                  Ketuk gambar untuk memperbesar
+                </p>
+              ) : null}
 
               <div className="mt-4 border-t border-line pt-4">
                 <p className="text-[10px] tracking-[0.2em] text-ink-faint uppercase">

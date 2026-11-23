@@ -6,7 +6,7 @@ export const SITE = {
   email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "locardcompany@gmail.com",
   city: "Jakarta, Indonesia",
   /** URL gambar QRIS. Kosongkan untuk memakai QR demo. */
-  qrisImage: process.env.NEXT_PUBLIC_QRIS_IMAGE ?? "",
+  qrisImage: process.env.NEXT_PUBLIC_QRIS_IMAGE ?? "/qris.jpg",
 } as const;
 
 export type ProductId = "locard" | "service";
@@ -32,7 +32,7 @@ export const PRODUCTS: Record<
     includes: [
       "Card holder premium",
       "Tracker terpadu + alarm",
-      "Akses dashboard dari perangkat apa pun",
+      "Pelacakan lewat aplikasi Find My / Find Hub",
       "Panduan pemakaian",
     ],
   },
@@ -47,7 +47,7 @@ export const PRODUCTS: Record<
       "Konsultasi penempatan",
       "Pemasangan oleh teknisi",
       "Uji fungsi sebelum diserahkan",
-      "Pendampingan setup dashboard",
+      "Panduan setup pelacakan",
     ],
   },
 };

@@ -28,12 +28,12 @@ const features = [
   {
     n: "01",
     title: "Lokasi terakhir",
-    body: "Lihat posisi terakhir card holder lengkap dengan waktu dan akurasi — dari perangkat apa pun.",
+    body: "Lihat posisi terakhir card holder lengkap dengan waktu dan akurasi — dari ponsel Anda.",
   },
   {
     n: "02",
     title: "Alarm dari jauh",
-    body: "Barang tertinggal di sekitar Anda tetapi tak terlihat? Bunyikan alarm langsung dari dashboard.",
+    body: "Barang tertinggal di sekitar Anda tetapi tak terlihat? Bunyikan alarm langsung dari aplikasi pelacak di ponsel Anda.",
   },
   {
     n: "03",
@@ -74,7 +74,7 @@ const steps = [
   {
     n: "03",
     title: "Aktivasi",
-    body: "Setibanya di tangan Anda, hubungkan perangkat dan akses lokasi, alarm, serta zona aman melalui dashboard.",
+    body: "Setibanya di tangan Anda, aktifkan perangkat dan pantau lokasi, alarm, serta zona aman lewat aplikasi pelacak di ponsel.",
   },
 ];
 
@@ -83,7 +83,7 @@ const marquee = [
   "Alarm dari jauh",
   "Zona aman",
   "Lokasi terakhir",
-  "Dashboard pribadi",
+  "Pelacakan di ponsel",
   "Pre-order Batch 01",
 ];
 
@@ -547,7 +547,6 @@ export default function Home() {
             <a href={waLink("Halo LOCARD, saya ingin bertanya.")} target="_blank" rel="noreferrer" className="nav-link transition hover:text-wine">
               Contact us
             </a>
-           <Link href="/login" className="nav-link transition hover:text-wine">Dashboard</Link>
           </div>
         </div>
         <div className="mx-auto w-full max-w-6xl px-6 pb-10">
