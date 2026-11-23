@@ -9,17 +9,17 @@ import { PRODUCTS, SITE, formatIDR, waLink } from "@/lib/site";
 const HERO_SLIDES: HeroSlide[] = [
   {
     src: "/products/hero-1.jpg",
-    alt: "Card holder LOCARD warna burgundy di dalam kotak premium",
-    caption: "Signature Burgundy",
-  },
-  {
-    src: "/products/hero-2.jpg",
-    alt: "Bagian dalam card holder LOCARD dengan slot kartu",
+    alt: "Card holder LOCARD terbuka dengan enam slot kartu di dalam kotak premium",
     caption: "Enam slot kartu",
   },
   {
+    src: "/products/hero-2.jpg",
+    alt: "Card holder LOCARD warna burgundy dengan monogram LC di atas kotak",
+    caption: "Signature Burgundy",
+  },
+  {
     src: "/products/hero-3.jpg",
-    alt: "Tiga pilihan warna card holder LOCARD",
+    alt: "Tiga pilihan warna card holder LOCARD: burgundy, hitam, dan cokelat",
     caption: "Tiga pilihan warna",
   },
 ];
