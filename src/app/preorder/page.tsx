@@ -2,21 +2,13 @@ import Link from "next/link";
 import LogoMark from "@/components/logo-mark";
 import PreorderForm from "@/components/preorder-form";
 import { PRODUCTS, SITE, formatIDR, waLink } from "@/lib/site";
-import type { ProductId } from "@/lib/site";
 
 export const metadata = {
   title: "Pre-Order LOCARD",
-  description: "Formulir pre-order LOCARD dan Jasa Pemasangan Tracker.",
+  description: "Formulir pre-order LOCARD.",
 };
 
-export default async function PreorderPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ produk?: string }>;
-}) {
-  const params = await searchParams;
-  const initialProduct: ProductId = params.produk === "service" ? "service" : "locard";
-
+export default function PreorderPage() {
   return (
     <main className="flex-1">
       <header className="border-b border-line/70 bg-paper/85 backdrop-blur-md">
@@ -46,11 +38,11 @@ export default async function PreorderPage({
 
               <div className="mt-7 max-w-2xl space-y-4 text-[14px] leading-relaxed text-ink-soft">
                 <p>
-                  Terima kasih atas minat Anda terhadap produk dan layanan LOCARD.
+                  Terima kasih atas minat Anda terhadap produk LOCARD.
                 </p>
                 <p>
                   Silakan lengkapi formulir pemesanan berikut dengan mengisi data
-                  diri serta memilih produk atau layanan yang diinginkan.
+                  diri sebelum melanjutkan ke pembayaran.
                 </p>
               </div>
 
@@ -72,7 +64,7 @@ export default async function PreorderPage({
               </p>
 
               <div className="mt-12">
-                <PreorderForm initialProduct={initialProduct} />
+                <PreorderForm />
               </div>
             </div>
 
@@ -81,19 +73,15 @@ export default async function PreorderPage({
                 <p className="eyebrow">Ringkasan</p>
 
                 <div className="mt-5 space-y-4">
-                  {(["locard", "service"] as ProductId[]).map((id) => (
-                    <div key={id} className="border-b border-line/70 pb-4 last:border-0 last:pb-0">
-                      <div className="flex items-baseline justify-between gap-3">
-                        <p className="text-[13px] font-medium">{PRODUCTS[id].name}</p>
-                        <p className="text-[13px] text-wine">{formatIDR(PRODUCTS[id].price)}</p>
-                      </div>
-                      <p className="mt-1 text-[11px] leading-relaxed text-ink-faint">
-                        {id === "locard"
-                          ? `DP ${formatIDR(PRODUCTS[id].dp)}/unit via QRIS`
-                          : "Dilanjutkan via WhatsApp"}
-                      </p>
+                  <div className="border-b border-line/70 pb-4 last:border-0 last:pb-0">
+                    <div className="flex items-baseline justify-between gap-3">
+                      <p className="text-[13px] font-medium">{PRODUCTS.locard.name}</p>
+                      <p className="text-[13px] text-wine">{formatIDR(PRODUCTS.locard.price)}</p>
                     </div>
-                  ))}
+                    <p className="mt-1 text-[11px] leading-relaxed text-ink-faint">
+                      DP {formatIDR(PRODUCTS.locard.dp)}/unit via QRIS
+                    </p>
+                  </div>
                 </div>
 
                 <div className="mt-6 rounded-xl bg-paper-dim/50 p-4">
@@ -133,7 +121,7 @@ export default async function PreorderPage({
           </div>
           <div className="flex flex-wrap gap-3">
             <a
-              href={waLink("Halo LOCARD, saya ingin konsultasi tentang produk dan layanan.")}
+              href={waLink("Halo LOCARD, saya ingin konsultasi tentang produk LOCARD.")}
               target="_blank"
               rel="noreferrer"
               className="rounded-full bg-wine px-7 py-3.5 text-[11px] tracking-[0.18em] text-cream uppercase transition hover:bg-wine-soft"

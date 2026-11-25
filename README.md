@@ -78,8 +78,7 @@ bridge yang Anda jalankan sendiri ke endpoint `webhook` LOCARD.
 
 Halaman `/preorder` menangani pemesanan:
 
-- **LOCARD** — Rp249.000, DP Rp50.000/unit via QRIS, unggah bukti transfer.
-- **Jasa Pemasangan Tracker** — Rp199.000, dilanjutkan lewat WhatsApp.
+- **LOCARD** - Rp299.000, DP Rp50.000/unit via QRIS, unggah bukti transfer.
 
 Pesanan disimpan di tabel `orders` (D1); bukti transfer disimpan di KV
 (binding `PROOFS`).

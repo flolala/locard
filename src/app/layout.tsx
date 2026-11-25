@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "LOCARD - More than just a card holder",
     description:
-      "Card holder premium dengan tracker terpadu. Pre-order LOCARD mulai Rp249.000.",
+      "Card holder premium dengan tracker terpadu. Pre-order LOCARD mulai Rp299.000.",
     type: "website",
   },
 };

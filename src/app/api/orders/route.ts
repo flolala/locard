@@ -45,51 +45,45 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Alamat email tidak valid." }, { status: 400 });
   }
 
-  if (product !== "locard" && product !== "service") {
-    return NextResponse.json({ error: "Pilih produk atau layanan." }, { status: 400 });
+  if (product !== "locard") {
+    return NextResponse.json({ error: "Produk tidak dikenal." }, { status: 400 });
   }
 
   const qty = Math.min(20, Math.max(1, Math.round(qtyRaw || 1)));
 
-  let proof:
-    | { key: string; type: string; size: number }
-    | undefined;
-
-  if (product === "locard") {
-    const file = form.get("proof");
-    if (!(file instanceof File) || file.size === 0) {
-      return NextResponse.json(
-        { error: "Unggah bukti transfer DP terlebih dahulu." },
-        { status: 400 },
-      );
-    }
-    if (file.size > MAX_PROOF_BYTES) {
-      return NextResponse.json(
-        { error: "Ukuran bukti transfer maksimal 5 MB." },
-        { status: 400 },
-      );
-    }
-    if (!ALLOWED_TYPES.includes(file.type)) {
-      return NextResponse.json(
-        { error: "Format bukti transfer harus JPG, PNG, atau WEBP." },
-        { status: 400 },
-      );
-    }
-
-    const env = getCloudflareContext().env as unknown as { PROOFS?: KVNamespace };
-    if (!env.PROOFS) {
-      return NextResponse.json(
-        { error: "Penyimpanan bukti transfer belum dikonfigurasi." },
-        { status: 503 },
-      );
-    }
-
-    const key = `proofs/${crypto.randomUUID()}`;
-    await env.PROOFS.put(key, await file.arrayBuffer(), {
-      metadata: { type: file.type, name: file.name, size: file.size },
-    });
-    proof = { key, type: file.type, size: file.size };
+  const file = form.get("proof");
+  if (!(file instanceof File) || file.size === 0) {
+    return NextResponse.json(
+      { error: "Unggah bukti transfer DP terlebih dahulu." },
+      { status: 400 },
+    );
   }
+  if (file.size > MAX_PROOF_BYTES) {
+    return NextResponse.json(
+      { error: "Ukuran bukti transfer maksimal 5 MB." },
+      { status: 400 },
+    );
+  }
+  if (!ALLOWED_TYPES.includes(file.type)) {
+    return NextResponse.json(
+      { error: "Format bukti transfer harus JPG, PNG, atau WEBP." },
+      { status: 400 },
+    );
+  }
+
+  const env = getCloudflareContext().env as unknown as { PROOFS?: KVNamespace };
+  if (!env.PROOFS) {
+    return NextResponse.json(
+      { error: "Penyimpanan bukti transfer belum dikonfigurasi." },
+      { status: 503 },
+    );
+  }
+
+  const key = `proofs/${crypto.randomUUID()}`;
+  await env.PROOFS.put(key, await file.arrayBuffer(), {
+    metadata: { type: file.type, name: file.name, size: file.size },
+  });
+  const proof = { key, type: file.type, size: file.size };
 
   const order = await createOrder({
     name,

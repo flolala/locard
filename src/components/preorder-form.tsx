@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import QRCode from "qrcode";
-import { PRODUCTS, SITE, formatIDR, waLink, type ProductId } from "@/lib/site";
+import { PRODUCTS, SITE, formatIDR, waLink } from "@/lib/site";
 
 type Result = {
   code: string;
@@ -16,8 +16,7 @@ type Result = {
 
 const MAX_BYTES = 5 * 1024 * 1024;
 
-export default function PreorderForm({ initialProduct }: { initialProduct: ProductId }) {
-  const [product, setProduct] = useState<ProductId>(initialProduct);
+export default function PreorderForm() {
   const [qty, setQty] = useState(1);
   const [proof, setProof] = useState<File | null>(null);
   const [qr, setQr] = useState<string | null>(null);
@@ -30,20 +29,11 @@ export default function PreorderForm({ initialProduct }: { initialProduct: Produ
     [proof],
   );
 
-  const meta = PRODUCTS[product];
+  const meta = PRODUCTS.locard;
   const total = meta.price * qty;
   const dp = meta.dp * qty;
 
-  const waMessage = useMemo(
-    () =>
-      `Halo LOCARD, saya ingin memesan ${meta.name}${
-        product === "locard" ? ` sebanyak ${qty} unit` : ""
-      }. Mohon informasi selanjutnya.`,
-    [meta.name, product, qty],
-  );
-
   useEffect(() => {
-    if (product !== "locard") return;
     let cancelled = false;
     QRCode.toDataURL(`LOCARD-DEMO|DP ${dp}|QTY ${qty}`, {
       margin: 1,
@@ -55,7 +45,7 @@ export default function PreorderForm({ initialProduct }: { initialProduct: Produ
     return () => {
       cancelled = true;
     };
-  }, [product, qty, dp]);
+  }, [qty, dp]);
 
   useEffect(() => {
     if (!preview) return;
@@ -94,14 +84,6 @@ export default function PreorderForm({ initialProduct }: { initialProduct: Produ
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))
       return setError("Alamat email tidak valid.");
 
-    if (product === "service") {
-      const text = `Halo LOCARD, saya ${name}. Saya ingin memesan Jasa Pemasangan Tracker (${formatIDR(
-        PRODUCTS.service.price,
-      )}). Mohon informasi selanjutnya.`;
-      window.open(waLink(text), "_blank", "noopener");
-      return;
-    }
-
     if (!proof) return setError("Unggah bukti transfer DP terlebih dahulu.");
 
     setState("submitting");
@@ -109,7 +91,7 @@ export default function PreorderForm({ initialProduct }: { initialProduct: Produ
     body.append("name", name);
     body.append("whatsapp", whatsapp);
     body.append("email", email);
-    body.append("product", product);
+    body.append("product", "locard");
     body.append("qty", String(qty));
     body.append("proof", proof);
 
@@ -160,203 +142,146 @@ export default function PreorderForm({ initialProduct }: { initialProduct: Produ
 
       {/* 02 — Produk */}
       <section>
-        <SectionTitle index="02" title="Pilih produk / layanan" required/>
-        <div className="mt-5 grid gap-3">
-          {(["locard", "service"] as ProductId[]).map((id) => {
-            const item = PRODUCTS[id];
-            const active = product === id;
-            return (
-              <label
-                key={id}
-                className={`flex cursor-pointer items-start gap-4 rounded-2xl border p-5 transition ${
-                  active
-                    ? "border-wine bg-wine/[0.04] shadow-[0_20px_40px_-32px_rgba(61,19,25,0.6)]"
-                    : "border-line bg-paper hover:border-wine/30"
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="product"
-                  value={id}
-                  checked={active}
-                  onChange={() => {
-                    setProduct(id);
-                    setError(null);
-                  }}
-                  className="peer sr-only"
-                />
-                <span
-                  className={`mt-1 grid h-4 w-4 shrink-0 place-items-center rounded-full border transition ${
-                    active ? "border-wine" : "border-line"
-                  }`}
-                >
-                  {active ? <span className="h-2 w-2 rounded-full bg-wine" /> : null}
-                </span>
-
-                <span className="flex-1">
-                  <span className="flex flex-wrap items-baseline justify-between gap-2">
-                    <span className="text-sm font-medium">{item.name}</span>
-                    <span className="font-display text-lg text-wine">
-                      {formatIDR(item.price)}
-                    </span>
-                  </span>
-                  <span className="mt-1 block text-[12px] leading-relaxed text-ink-soft">
-                    {item.summary}
-                  </span>
-                </span>
-              </label>
-            );
-          })}
+        <SectionTitle index="02" title="Produk" required />
+        <div className="mt-5 rounded-2xl border border-wine bg-wine/[0.04] p-5 shadow-[0_20px_40px_-32px_rgba(61,19,25,0.6)]">
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <span className="text-sm font-medium">{PRODUCTS.locard.name}</span>
+            <span className="font-display text-lg text-wine">
+              {formatIDR(PRODUCTS.locard.price)}
+            </span>
+          </div>
+          <p className="mt-1 text-[12px] leading-relaxed text-ink-soft">
+            {PRODUCTS.locard.summary}
+          </p>
         </div>
       </section>
 
       {/* 03 — Pembayaran */}
-      {product === "locard" ? (
-        <section>
-          <SectionTitle
-            index="03"
-            title="Pembayaran DP"
-            required hint={`DP ${formatIDR(PRODUCTS.locard.dp)} per unit via QRIS.`}
-          />
+      <section>
+      <SectionTitle
+        index="03"
+        title="Pembayaran DP"
+        required hint={`DP ${formatIDR(PRODUCTS.locard.dp)} per unit via QRIS.`}
+      />
 
-          <div className="mt-5 grid gap-6 lg:grid-cols-[1fr_260px]">
-            <div className="space-y-5">
-              <div className="flex items-center justify-between rounded-2xl border border-line bg-paper px-5 py-4">
-                <div>
-                  <p className="text-[10px] tracking-[0.2em] text-ink-faint uppercase">
-                    Jumlah pemesanan <span className="text-wine">*</span>
-                  </p>
-                  <p className="mt-1 text-[12px] text-ink-soft">
-                    Maksimal 20 unit per formulir.
-                  </p>
-                </div>
-                <div className="flex items-center gap-1 rounded-full border border-line bg-paper-dim/50 p-1">
-                  <StepButton onClick={() => setQty((q) => Math.max(1, q - 1))} disabled={qty <= 1}>
-                    −
-                  </StepButton>
-                  <span className="w-9 text-center text-sm font-medium">{qty}</span>
-                  <StepButton onClick={() => setQty((q) => Math.min(20, q + 1))} disabled={qty >= 20}>
-                    +
-                  </StepButton>
-                </div>
-              </div>
-
+        <div className="mt-5 grid gap-6 lg:grid-cols-[1fr_260px]">
+          <div className="space-y-5">
+            <div className="flex items-center justify-between rounded-2xl border border-line bg-paper px-5 py-4">
               <div>
                 <p className="text-[10px] tracking-[0.2em] text-ink-faint uppercase">
-                  Unggah bukti transfer
+                  Jumlah pemesanan <span className="text-wine">*</span>
                 </p>
-
-                <label
-                  className={`mt-2 flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed px-6 py-8 text-center transition ${
-                    proof ? "border-wine/40 bg-wine/[0.03]" : "border-line bg-paper hover:border-wine/40"
-                  }`}
-                >
-                  <input
-                    type="file"
-                    accept="image/png,image/jpeg,image/webp"
-                    className="sr-only"
-                    onChange={(e) => pickFile(e.target.files?.[0] ?? null)}
-                  />
-
-                  {preview ? (
-                    <span className="flex flex-col items-center gap-3">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={preview}
-                        alt="Pratinjau bukti transfer"
-                        className="h-32 w-auto rounded-lg border border-line object-contain"
-                      />
-                      <span className="text-[12px] text-ink-soft">
-                        {proof?.name} · {(proof!.size / 1024).toFixed(0)} KB
-                      </span>
-                      <span className="text-[10px] tracking-[0.18em] text-wine uppercase">
-                        Ganti gambar
-                      </span>
-                    </span>
-                  ) : (
-                    <span className="flex flex-col items-center gap-2">
-                      <span className="grid h-10 w-10 place-items-center rounded-full border border-line text-wine">
-                        ↑
-                      </span>
-                      <span className="text-[13px] font-medium">Pilih gambar bukti transfer</span>
-                      <span className="text-[11px] text-ink-faint">
-                        JPG, PNG, atau WEBP · maksimal 5 MB
-                      </span>
-                    </span>
-                  )}
-                </label>
+                <p className="mt-1 text-[12px] text-ink-soft">
+                  Maksimal 20 unit per formulir.
+                </p>
+              </div>
+              <div className="flex items-center gap-1 rounded-full border border-line bg-paper-dim/50 p-1">
+                <StepButton onClick={() => setQty((q) => Math.max(1, q - 1))} disabled={qty <= 1}>
+                  −
+                </StepButton>
+                <span className="w-9 text-center text-sm font-medium">{qty}</span>
+                <StepButton onClick={() => setQty((q) => Math.min(20, q + 1))} disabled={qty >= 20}>
+                  +
+                </StepButton>
               </div>
             </div>
 
-            <div className="rounded-2xl border border-line bg-paper p-5 text-center">
+            <div>
               <p className="text-[10px] tracking-[0.2em] text-ink-faint uppercase">
-                Pindai untuk membayar
+                Unggah bukti transfer
               </p>
 
-              <div className="mx-auto mt-4 w-full max-w-[280px] overflow-hidden rounded-xl border border-line bg-paper p-2">
-                {SITE.qrisImage ? (
-                  <a href={SITE.qrisImage} target="_blank" rel="noreferrer" className="block">
+              <label
+                className={`mt-2 flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed px-6 py-8 text-center transition ${
+                  proof ? "border-wine/40 bg-wine/[0.03]" : "border-line bg-paper hover:border-wine/40"
+                }`}
+              >
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  className="sr-only"
+                  onChange={(e) => pickFile(e.target.files?.[0] ?? null)}
+                />
+
+                {preview ? (
+                  <span className="flex flex-col items-center gap-3">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={SITE.qrisImage} alt="QRIS pembayaran LOCARD" className="w-full" />
-                  </a>
-                ) : qr ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={qr} alt="QR demo" className="w-full" />
+                    <img
+                      src={preview}
+                      alt="Pratinjau bukti transfer"
+                      className="h-32 w-auto rounded-lg border border-line object-contain"
+                    />
+                    <span className="text-[12px] text-ink-soft">
+                      {proof?.name} · {(proof!.size / 1024).toFixed(0)} KB
+                    </span>
+                    <span className="text-[10px] tracking-[0.18em] text-wine uppercase">
+                      Ganti gambar
+                    </span>
+                  </span>
                 ) : (
-                  <div className="grid aspect-square place-items-center text-[11px] text-ink-faint">
-                    Memuat QR…
-                  </div>
+                  <span className="flex flex-col items-center gap-2">
+                    <span className="grid h-10 w-10 place-items-center rounded-full border border-line text-wine">
+                      ↑
+                    </span>
+                    <span className="text-[13px] font-medium">Pilih gambar bukti transfer</span>
+                    <span className="text-[11px] text-ink-faint">
+                      JPG, PNG, atau WEBP · maksimal 5 MB
+                    </span>
+                  </span>
                 )}
-              </div>
-
-              <p className="mt-3 text-[10px] leading-relaxed text-ink-faint">
-                {SITE.qrisImage
-                  ? "QRIS resmi LOCARD"
-                  : "QR demo — belum terhubung ke QRIS pembayaran"}
-              </p>
-
-              {SITE.qrisImage ? (
-                <p className="mt-1 text-[10px] text-ink-faint">
-                  Ketuk gambar untuk memperbesar
-                </p>
-              ) : null}
-
-              <div className="mt-4 border-t border-line pt-4">
-                <p className="text-[10px] tracking-[0.2em] text-ink-faint uppercase">
-                  Total harga
-                </p>
-                <p className="mt-1 text-[13px] text-ink-soft">{formatIDR(total)}</p>
-              </div>
-
-              <div className="mt-3 border-t border-line pt-3">
-                <p className="text-[10px] tracking-[0.2em] text-ink-faint uppercase">
-                  DP sekarang
-                </p>
-                <p className="mt-1 font-display text-2xl text-wine">{formatIDR(dp)}</p>
-              </div>
+              </label>
             </div>
           </div>
-        </section>
-      ) : (
-        <section>
-          <SectionTitle index="03" title="Konsultasi & pemesanan" />
-          <div className="mt-5 rounded-2xl border border-wine/20 bg-wine/[0.04] p-6">
-            <p className="text-sm leading-relaxed text-ink-soft">
-              Untuk Jasa Pemasangan Tracker, pesanan dilanjutkan melalui WhatsApp agar
-              tim kami dapat membahas barang yang akan dipasangi, lokasi pemasangan,
-              dan jadwalnya.
+
+          <div className="rounded-2xl border border-line bg-paper p-5 text-center">
+            <p className="text-[10px] tracking-[0.2em] text-ink-faint uppercase">
+              Pindai untuk membayar
             </p>
-            <a
-              href={waLink(waMessage)}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-4 inline-flex items-center gap-2 rounded-full bg-wine px-6 py-3 text-[11px] tracking-[0.18em] text-cream uppercase transition hover:bg-wine-soft"
-            >
-              Hubungi via WhatsApp →
-            </a>
+
+            <div className="mx-auto mt-4 w-full max-w-[280px] overflow-hidden rounded-xl border border-line bg-paper p-2">
+              {SITE.qrisImage ? (
+                <a href={SITE.qrisImage} target="_blank" rel="noreferrer" className="block">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={SITE.qrisImage} alt="QRIS pembayaran LOCARD" className="w-full" />
+                </a>
+              ) : qr ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={qr} alt="QR demo" className="w-full" />
+              ) : (
+                <div className="grid aspect-square place-items-center text-[11px] text-ink-faint">
+                  Memuat QR…
+                </div>
+              )}
+            </div>
+
+            <p className="mt-3 text-[10px] leading-relaxed text-ink-faint">
+              {SITE.qrisImage
+                ? "QRIS resmi LOCARD"
+                : "QR demo — belum terhubung ke QRIS pembayaran"}
+            </p>
+
+            {SITE.qrisImage ? (
+              <p className="mt-1 text-[10px] text-ink-faint">
+                Ketuk gambar untuk memperbesar
+              </p>
+            ) : null}
+
+            <div className="mt-4 border-t border-line pt-4">
+              <p className="text-[10px] tracking-[0.2em] text-ink-faint uppercase">
+                Total harga
+              </p>
+              <p className="mt-1 text-[13px] text-ink-soft">{formatIDR(total)}</p>
+            </div>
+
+            <div className="mt-3 border-t border-line pt-3">
+              <p className="text-[10px] tracking-[0.2em] text-ink-faint uppercase">
+                DP sekarang
+              </p>
+              <p className="mt-1 font-display text-2xl text-wine">{formatIDR(dp)}</p>
+            </div>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       {error ? (
         <p className="rounded-xl border border-danger/25 bg-danger/5 px-4 py-3 text-[13px] text-danger">
@@ -377,9 +302,7 @@ export default function PreorderForm({ initialProduct }: { initialProduct: Produ
         >
           {state === "submitting"
             ? "Submitting…"
-            : product === "service"
-              ? "Lanjut via WhatsApp"
-              : "Submit"}
+            : "Submit"}
         </button>
       </div>
     </form>
@@ -466,10 +389,7 @@ function SuccessPanel({ result }: { result: Result }) {
 
       <div className="mx-auto mt-8 max-w-sm rounded-2xl border border-line bg-paper-dim/40 p-5 text-left">
         <Row label="Kode pesanan" value={result.code} mono />
-        <Row
-          label="Produk"
-          value={result.product === "locard" ? "LOCARD" : "Jasa Pemasangan Tracker"}
-        />
+        <Row label="Produk" value="LOCARD" />
         <Row label="Jumlah" value={`${result.qty} unit`} />
         <Row label="Total" value={formatIDR(result.total)} />
         <Row label="DP dibayar" value={formatIDR(result.dp)} />

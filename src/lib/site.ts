@@ -9,7 +9,7 @@ export const SITE = {
   qrisImage: process.env.NEXT_PUBLIC_QRIS_IMAGE ?? "/qris.jpg",
 } as const;
 
-export type ProductId = "locard" | "service";
+export type ProductId = "locard";
 
 export const PRODUCTS: Record<
   ProductId,
@@ -25,7 +25,7 @@ export const PRODUCTS: Record<
   locard: {
     id: "locard",
     name: "LOCARD",
-    price: 249_000,
+    price: 299_000,
     dp: 50_000,
     summary:
       "Smart card holder untuk menjaga kartu-kartu terpenting Anda tetap aman setiap saat.",
@@ -34,20 +34,6 @@ export const PRODUCTS: Record<
       "Tracker terpadu + alarm",
       "Pelacakan lewat aplikasi Find My / Find Hub",
       "Panduan pemakaian",
-    ],
-  },
-  service: {
-    id: "service",
-    name: "Jasa Pemasangan Tracker",
-    price: 199_000,
-    dp: 0,
-    summary:
-      "Tracker dipasang rapi oleh teknisi pada barang pilihan Anda — dompet, tas, atau kunci.",
-    includes: [
-      "Konsultasi penempatan",
-      "Pemasangan oleh teknisi",
-      "Uji fungsi sebelum diserahkan",
-      "Panduan setup pelacakan",
     ],
   },
 };

@@ -288,73 +288,52 @@ export default function Home() {
               style={{ "--reveal-delay": "200ms" } as CSSProperties}
               className="max-w-sm text-sm leading-relaxed text-ink-soft"
             >
-              Pilih card holder siap pakai, atau pasangkan tracker pada barang
-              favorit yang sudah Anda miliki.
+              Satu produk, satu standar: smart card holder dengan tracker terpadu
+              yang siap dipakai setiap hari.
             </p>
           </div>
 
-          <div data-reveal-stagger="160" className="mt-14 grid gap-6 md:grid-cols-2">
-            {[PRODUCTS.locard, PRODUCTS.service].map((product) => (
-              <article
-                key={product.id}
-                data-reveal="scale"
-                className="group flex flex-col justify-between rounded-2xl border border-line bg-paper p-8 transition-[border-color,box-shadow,translate] duration-500 hover:-translate-y-1 hover:border-wine/30 hover:shadow-[0_30px_60px_-45px_rgba(61,19,25,0.5)]"
-              >
-                <div>
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <p className="text-[10px] tracking-[0.24em] text-ink-faint uppercase">
-                        {product.id === "locard" ? "Signature" : "Service"}
-                      </p>
-                      <h3 className="mt-2 font-display text-2xl">{product.name}</h3>
-                    </div>
-                    <p className="font-display text-2xl text-wine">
-                      {formatIDR(product.price)}
-                    </p>
-                  </div>
+          <div data-reveal="scale" className="mt-14">
+            <article className="group flex flex-col justify-between gap-8 rounded-2xl border border-line bg-paper p-8 transition-[border-color,box-shadow,translate] duration-500 hover:-translate-y-1 hover:border-wine/30 hover:shadow-[0_30px_60px_-45px_rgba(61,19,25,0.5)] md:flex-row md:items-end">
+              <div className="max-w-xl">
+                <p className="text-[10px] tracking-[0.24em] text-ink-faint uppercase">
+                  Signature
+                </p>
+                <h3 className="mt-2 font-display text-2xl">{PRODUCTS.locard.name}</h3>
 
-                  <p className="mt-4 max-w-sm text-[13px] leading-relaxed text-ink-soft">
-                    {product.summary}
-                  </p>
+                <p className="mt-4 text-[13px] leading-relaxed text-ink-soft">
+                  {PRODUCTS.locard.summary}
+                </p>
 
-                  <ul className="mt-6 space-y-2 border-t border-line pt-5">
-                    {product.includes.map((item) => (
-                      <li
-                        key={item}
-                        className="flex items-start gap-2.5 text-[13px] text-ink-soft"
-                      >
-                        <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-wine/50" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                <ul className="mt-6 space-y-2 border-t border-line pt-5">
+                  {PRODUCTS.locard.includes.map((item) => (
+                    <li
+                      key={item}
+                      className="flex items-start gap-2.5 text-[13px] text-ink-soft"
+                    >
+                      <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-wine/50" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-                <div className="mt-8 flex items-center justify-between gap-4">
-                  {product.id === "locard" ? (
-                    <span className="text-[10px] tracking-[0.16em] text-ink-faint uppercase">
-                      DP {formatIDR(product.dp)} via QRIS
-                    </span>
-                  ) : (
-                    <span className="text-[10px] tracking-[0.16em] text-ink-faint uppercase">
-                      Konsultasi via WhatsApp
-                    </span>
-                  )}
-
-                  <Link
-                    href={product.id === "locard" ? "/preorder" : "/preorder?produk=service"}
-                   className={`inline-flex items-center gap-2 rounded-full px-6 py-3 text-[10px] font-medium tracking-[0.2em] uppercase transition ${
-  product.id === "locard"
-    ? "bg-wine text-cream shadow-[0_14px_30px_-18px_rgba(86,28,36,0.9)] hover:bg-wine-soft"
-    : "bg-cream text-wine ring-1 ring-inset ring-wine/20 hover:bg-paper-deep"
-}`}
-                  >
-                    {product.id === "locard" ? "Pilih" : "Tanya"}
-                    <span aria-hidden>→</span>
-                  </Link>
-                </div>
-              </article>
-            ))}
+              <div className="flex shrink-0 flex-col items-start gap-4 md:items-end">
+                <p className="font-display text-3xl text-wine">
+                  {formatIDR(PRODUCTS.locard.price)}
+                </p>
+                <span className="text-[10px] tracking-[0.16em] text-ink-faint uppercase">
+                  DP {formatIDR(PRODUCTS.locard.dp)} via QRIS
+                </span>
+                <Link
+                  href="/preorder"
+                  className="inline-flex items-center gap-2 rounded-full bg-wine px-6 py-3 text-[10px] font-medium tracking-[0.2em] text-cream uppercase shadow-[0_14px_30px_-18px_rgba(86,28,36,0.9)] transition hover:bg-wine-soft"
+                >
+                  Pilih
+                  <span aria-hidden>→</span>
+                </Link>
+              </div>
+            </article>
           </div>
         </div>
       </section>
@@ -497,7 +476,7 @@ export default function Home() {
 
           <div data-reveal-stagger="120" className="space-y-3">
             <a
-              href={waLink("Halo LOCARD, saya ingin bertanya tentang produk dan layanan.")}
+              href={waLink("Halo LOCARD, saya ingin bertanya tentang produk LOCARD.")}
               target="_blank"
               rel="noreferrer"
               data-reveal="right"
