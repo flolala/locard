@@ -1,6 +1,7 @@
 import "server-only";
 
 import { all, first } from "./db";
+import { withDummyLive } from "./dummy"; // DUMMY
 import type {
   LiveDailyRow,
   LiveEvent,
@@ -167,7 +168,7 @@ export async function getLiveSnapshot(
     ),
     rangeKey === "today"
       ? all<SeriesRow>(
-          `SELECT
+        `SELECT
              substr(created_at, 1, 16) AS bucket,
              COALESCE(SUM(CASE WHEN type = 'pageview' THEN 1 ELSE 0 END), 0) AS pageviews,
              COALESCE(SUM(CASE WHEN type = 'cta_order' THEN 1 ELSE 0 END), 0) AS clicks,
@@ -176,8 +177,8 @@ export async function getLiveSnapshot(
            WHERE created_at >= ?
            GROUP BY bucket
            ORDER BY bucket`,
-          [thirtyMinutesAgo],
-        )
+        [thirtyMinutesAgo],
+      )
       : Promise.resolve([]),
     all<DailyEventsRow>(
       `SELECT
@@ -293,7 +294,7 @@ export async function getLiveSnapshot(
     dp: Number(ordersRow?.dp ?? 0),
   };
 
-  return {
+  const snapshot: LiveSnapshot = {
     generatedAt,
     range: {
       key: rangeKey,
@@ -327,4 +328,6 @@ export async function getLiveSnapshot(
       createdAt: row.created_at,
     })),
   };
+
+  return withDummyLive(snapshot, now); // DUMMY — ganti jadi `return snapshot;` untuk mencabut
 }

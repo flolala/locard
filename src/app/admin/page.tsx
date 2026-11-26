@@ -2,6 +2,7 @@ import AdminLogin from "@/components/admin-login";
 import AdminOrders from "@/components/admin-orders";
 import AdminShell from "@/components/admin-shell";
 import { adminConfigured, isAdmin } from "@/lib/admin";
+import { withDummyOrderStats, withDummyOrders } from "@/lib/dummy"; // DUMMY
 import { listOrdersFiltered, orderStats } from "@/lib/orders";
 
 export const metadata = {
@@ -53,10 +54,12 @@ export default async function AdminPage({
 
   const params = await searchParams;
   const status = params.status;
-  const [orders, stats] = await Promise.all([
+  const [realOrders, realStats] = await Promise.all([
     listOrdersFiltered({ status }),
     orderStats(),
   ]);
+  const orders = withDummyOrders(realOrders, status); // DUMMY — ganti jadi `realOrders`
+  const stats = withDummyOrderStats(realStats); // DUMMY — ganti jadi `realStats`
 
   return (
     <AdminShell active="orders">
