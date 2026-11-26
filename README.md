@@ -83,6 +83,22 @@ Halaman `/preorder` menangani pemesanan:
 Pesanan disimpan di tabel `orders` (D1); bukti transfer disimpan di KV
 (binding `PROOFS`).
 
+## Live dashboard
+
+`/admin/live` menampilkan aktivitas situs secara real-time (auto-refresh tiap 5
+detik, login admin yang sama dengan `/admin`):
+
+- pengunjung online (5 menit terakhir), kunjungan halaman, dan pengunjung unik hari ini;
+- klik tombol Order, klik WhatsApp, dan pembukaan poster QRIS;
+- order masuk, total DP hari ini, serta daftar pembayaran terbaru;
+- corong kunjungan → lihat pre-order → klik Order → pesanan;
+- event terbaru, halaman terpopuler, dan sumber trafik.
+
+Event dikirim oleh `SiteTracker` di browser ke `POST /api/track` lalu disimpan di
+tabel `events` (D1). Saat pesanan berhasil dibuat, server juga menulis event
+`order_created` berisi kode pesanan dan nominal DP. ID sesi/pengunjung dibuat acak
+dan anonim — tanpa cookie iklan dan tanpa menyimpan alamat IP.
+
 | Variabel | Fungsi |
 |---|---|
 | `NEXT_PUBLIC_WHATSAPP` | Nomor WhatsApp bisnis (format `62812...`) |

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import QRCode from "qrcode";
 import { PRODUCTS, SITE, formatIDR, waLink } from "@/lib/site";
+import { getSessionId, track } from "@/lib/track-client";
 
 type Result = {
   code: string;
@@ -67,6 +68,7 @@ export default function PreorderForm() {
       return;
     }
     setProof(file);
+    track("proof_uploaded", { label: `${Math.round(file.size / 1024)} KB` });
   }
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -78,14 +80,20 @@ export default function PreorderForm() {
     const whatsapp = String(data.get("whatsapp") ?? "").trim();
     const email = String(data.get("email") ?? "").trim();
 
-    if (name.length < 2) return setError("Nama lengkap minimal 2 karakter.");
+    const fail = (message: string) => {
+      setError(message);
+      track("submit_error", { label: message });
+    };
+
+    if (name.length < 2) return fail("Nama lengkap minimal 2 karakter.");
     if (whatsapp.replace(/[^\d]/g, "").length < 9)
-      return setError("Nomor WhatsApp belum lengkap.");
+      return fail("Nomor WhatsApp belum lengkap.");
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))
-      return setError("Alamat email tidak valid.");
+      return fail("Alamat email tidak valid.");
 
-    if (!proof) return setError("Unggah bukti transfer DP terlebih dahulu.");
+    if (!proof) return fail("Unggah bukti transfer DP terlebih dahulu.");
 
+    track("submit_attempt");
     setState("submitting");
     const body = new FormData();
     body.append("name", name);
@@ -94,13 +102,16 @@ export default function PreorderForm() {
     body.append("product", "locard");
     body.append("qty", String(qty));
     body.append("proof", proof);
+    body.append("session", getSessionId());
 
     try {
       const response = await fetch("/api/orders", { method: "POST", body });
       const json = await response.json();
       if (!response.ok) {
-        setError(json.error ?? "Pesanan gagal dikirim.");
+        const message = json.error ?? "Pesanan gagal dikirim.";
+        setError(message);
         setState("error");
+        track("submit_error", { label: message });
         return;
       }
       setResult(json.order);
@@ -109,6 +120,7 @@ export default function PreorderForm() {
     } catch {
       setError("Tidak dapat menghubungi server. Coba lagi.");
       setState("error");
+      track("submit_error", { label: "Tidak dapat menghubungi server" });
     }
   }
 
@@ -400,6 +412,7 @@ function SuccessPanel({ result }: { result: Result }) {
         href={waLink(message)}
         target="_blank"
         rel="noreferrer"
+        onClick={() => track("wa_confirm", { label: result.code })}
         className="mt-8 inline-flex items-center gap-2 rounded-full bg-wine px-8 py-3.5 text-[11px] tracking-[0.2em] text-cream uppercase transition hover:bg-wine-soft"
       >
         Konfirmasi via WhatsApp →

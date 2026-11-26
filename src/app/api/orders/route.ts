@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { trackEvent } from "@/lib/events";
 import { createOrder, priceFor } from "@/lib/orders";
 import type { ProductId } from "@/lib/site";
 
@@ -28,6 +29,7 @@ export async function POST(request: Request) {
   const product = String(form.get("product") ?? "") as ProductId;
   const qtyRaw = Number(form.get("qty") ?? 1);
   const note = String(form.get("note") ?? "").trim();
+  const session = String(form.get("session") ?? "").slice(0, 64);
 
   if (name.length < 2) {
     return NextResponse.json({ error: "Nama lengkap minimal 2 karakter." }, { status: 400 });
@@ -96,6 +98,19 @@ export async function POST(request: Request) {
   });
 
   const pricing = priceFor(product, qty);
+
+  try {
+    await trackEvent({
+      type: "order_created",
+      path: "/preorder",
+      label: order.code,
+      sessionId: session || null,
+      country: request.headers.get("cf-ipcountry"),
+      meta: { code: order.code, qty, dp: pricing.dp, total: pricing.total },
+    });
+  } catch {
+    // Tracking gagal tidak boleh membatalkan pesanan.
+  }
 
   return NextResponse.json(
     {

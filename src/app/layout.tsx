@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
+import SiteTracker from "@/components/site-tracker";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -45,6 +46,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col bg-paper text-ink">
         {children}
+
+        <SiteTracker />
 
         <script
           dangerouslySetInnerHTML={{

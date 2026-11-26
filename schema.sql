@@ -96,3 +96,23 @@ CREATE TABLE IF NOT EXISTS orders (
   created_at  TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_orders_created ON orders(created_at DESC);
+
+-- ============================================================
+-- Analytics events (live dashboard)
+-- Anonim: tidak menyimpan IP, hanya ID sesi/pengunjung acak.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS events (
+  id          TEXT PRIMARY KEY,
+  type        TEXT NOT NULL,
+  path        TEXT,
+  label       TEXT,
+  session_id  TEXT,
+  visitor_id  TEXT,
+  country     TEXT,
+  referrer    TEXT,
+  meta        TEXT,
+  created_at  TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_events_created ON events(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_events_type_created ON events(type, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_events_session ON events(session_id, created_at DESC);

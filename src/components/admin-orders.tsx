@@ -223,18 +223,27 @@ export default function AdminOrders({
           <div>
             <p className="eyebrow">Statistik pengunjung</p>
             <p className="mt-2 max-w-md text-sm leading-relaxed text-ink-soft">
-              Kunjungan, halaman populer, dan sumber trafik dipantau lewat
-              Cloudflare Web Analytics — tanpa cookie dan tanpa memperlambat situs.
+              Aktivitas real-time — pengunjung, klik tombol Order, dan DP — ada di
+              Live dashboard. Tren jangka panjang tetap dipantau lewat Cloudflare Web
+              Analytics.
             </p>
           </div>
-          <a
-            href={analyticsUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="rounded-full bg-wine px-6 py-3 text-[11px] tracking-[0.16em] text-cream uppercase transition hover:bg-wine-soft"
-          >
-            Buka dashboard →
-          </a>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href="/admin/live"
+              className="rounded-full bg-wine px-6 py-3 text-[11px] tracking-[0.16em] text-cream uppercase transition hover:bg-wine-soft"
+            >
+              Live dashboard →
+            </Link>
+            <a
+              href={analyticsUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-full border border-line bg-paper px-6 py-3 text-[11px] tracking-[0.16em] text-ink-soft uppercase transition hover:border-wine/30 hover:text-wine"
+            >
+              Cloudflare →
+            </a>
+          </div>
         </div>
       </section>
     </div>
