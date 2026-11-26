@@ -3,6 +3,7 @@ import AdminShell from "@/components/admin-shell";
 import LiveDashboard from "@/components/live-dashboard";
 import { adminConfigured, isAdmin } from "@/lib/admin";
 import { getLiveSnapshot } from "@/lib/live";
+import { isLiveRangeKey, type LiveRangeKey } from "@/lib/track-shared";
 
 export const metadata = {
   title: "Live — LOCARD",
@@ -11,7 +12,11 @@ export const metadata = {
 
 export const dynamic = "force-dynamic";
 
-export default async function LivePage() {
+export default async function LivePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ range?: string }>;
+}) {
   const configured = adminConfigured();
   const authed = await isAdmin();
 
@@ -47,7 +52,10 @@ export default async function LivePage() {
     );
   }
 
-  const snapshot = await getLiveSnapshot();
+  const params = await searchParams;
+  const requested = params.range ?? "";
+  const range: LiveRangeKey = isLiveRangeKey(requested) ? requested : "today";
+  const snapshot = await getLiveSnapshot(range);
 
   return (
     <AdminShell active="live">

@@ -6,12 +6,20 @@ import { formatIDR } from "@/lib/site";
 import {
   EVENT_META,
   type EventTone,
+  type LiveDailyRow,
   type LiveEvent,
+  type LiveRangeKey,
   type LiveSnapshot,
 } from "@/lib/track-shared";
 
 const POLL_MS = 5000;
 const JAKARTA_OFFSET_MS = 7 * 60 * 60 * 1000;
+
+const RANGE_OPTIONS: Array<{ key: LiveRangeKey; label: string }> = [
+  { key: "today", label: "Hari ini" },
+  { key: "7d", label: "7 hari" },
+  { key: "30d", label: "30 hari" },
+];
 
 const TONE_DOT: Record<EventTone, string> = {
   visit: "bg-wine/30",
@@ -79,6 +87,7 @@ function eventDetail(event: LiveEvent) {
 
 export default function LiveDashboard({ initial }: { initial: LiveSnapshot }) {
   const [data, setData] = useState(initial);
+  const [range, setRange] = useState<LiveRangeKey>(initial.range.key);
   const [paused, setPaused] = useState(false);
   const [failed, setFailed] = useState(false);
   const [nowMs, setNowMs] = useState<number | null>(null);
@@ -101,7 +110,9 @@ export default function LiveDashboard({ initial }: { initial: LiveSnapshot }) {
       }
 
       try {
-        const response = await fetch("/api/admin/live", { cache: "no-store" });
+        const response = await fetch(`/api/admin/live?range=${range}`, {
+          cache: "no-store",
+        });
         if (!response.ok) throw new Error("request failed");
         const snapshot = (await response.json()) as LiveSnapshot;
         if (!cancelled) {
@@ -115,27 +126,42 @@ export default function LiveDashboard({ initial }: { initial: LiveSnapshot }) {
       if (!cancelled) timer = setTimeout(pull, POLL_MS);
     };
 
-    timer = setTimeout(pull, POLL_MS);
+    void pull();
     return () => {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [paused]);
+  }, [paused, range]);
+
+  function chooseRange(next: LiveRangeKey) {
+    if (next === range) return;
+    setRange(next);
+    window.history.replaceState(
+      null,
+      "",
+      next === "today" ? "/admin/live" : `/admin/live?range=${next}`,
+    );
+  }
 
   const conversion =
-    data.today.visitors > 0 ? (data.today.orders / data.today.visitors) * 100 : 0;
+    data.totals.visitors > 0 ? (data.totals.orders / data.totals.visitors) * 100 : 0;
   const clock = wibTime(nowMs ? new Date(nowMs).toISOString() : data.generatedAt);
   const connection = paused ? "paused" : failed ? "error" : "live";
+  const isToday = data.range.key === "today";
+  const periodText = isToday ? "hari ini" : data.range.label;
 
   return (
     <div className="space-y-8">
       <header className="flex flex-wrap items-end justify-between gap-5">
         <div>
           <p className="eyebrow">Live dashboard</p>
-          <h1 className="mt-2 font-display text-4xl">Aktivitas real-time</h1>
+          <h1 className="mt-2 font-display text-4xl">
+            {isToday ? "Aktivitas real-time" : "Aktivitas situs"}
+          </h1>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-ink-soft">
-            Pantau pengunjung yang masuk ke situs, klik tombol Order, dan pembayaran
-            DP saat kejadiannya berlangsung.
+            {isToday
+              ? "Pantau pengunjung yang masuk ke situs, klik tombol Order, dan pembayaran DP saat kejadiannya berlangsung."
+              : `Rekap ${periodText} — pengunjung, klik tombol Order, pesanan masuk, dan DP.`}
           </p>
         </div>
 
@@ -193,6 +219,41 @@ export default function LiveDashboard({ initial }: { initial: LiveSnapshot }) {
         </div>
       </header>
 
+      <section className="flex flex-wrap items-center justify-between gap-3">
+        <div
+          role="group"
+          aria-label="Rentang waktu"
+          className="flex items-center gap-1 rounded-full border border-line bg-paper p-1 text-[10px] tracking-[0.14em] uppercase"
+        >
+          {RANGE_OPTIONS.map((option) => {
+            const active = option.key === range;
+            return (
+              <button
+                key={option.key}
+                type="button"
+                onClick={() => chooseRange(option.key)}
+                aria-pressed={active}
+                className={`rounded-full px-4 py-1.5 transition ${
+                  active
+                    ? "bg-wine text-cream"
+                    : "text-ink-soft hover:bg-paper-dim hover:text-wine"
+                }`}
+              >
+                {option.label}
+              </button>
+            );
+          })}
+        </div>
+
+        <p className="text-[10px] tracking-[0.12em] text-ink-faint uppercase">
+          {isToday
+            ? "Hari ini · WIB"
+            : `${data.range.days} hari terakhir · ${data.daily[0]?.label ?? ""} – ${
+                data.daily[data.daily.length - 1]?.label ?? ""
+              }`}
+        </p>
+      </section>
+
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <Stat
           live
@@ -201,47 +262,51 @@ export default function LiveDashboard({ initial }: { initial: LiveSnapshot }) {
           hint={`${data.online.pageviews} halaman dibuka · 5 menit terakhir`}
         />
         <Stat
-          label="Pengunjung hari ini"
-          value={String(data.today.visitors)}
-          hint={`${data.today.pageviews} kunjungan halaman`}
+          label={`Pengunjung ${periodText}`}
+          value={String(data.totals.visitors)}
+          hint={`${data.totals.pageviews} kunjungan halaman`}
         />
         <Stat
           label="Klik tombol Order"
-          value={String(data.today.clicks)}
-          hint={`${data.today.clickers} pengunjung unik`}
+          value={String(data.totals.clicks)}
+          hint={`${data.totals.clickers} pengunjung unik`}
         />
         <Stat
           label="Order masuk"
-          value={String(data.today.orders)}
+          value={String(data.totals.orders)}
           hint={`Konversi ${conversion.toFixed(1)}% dari pengunjung`}
         />
         <Stat
           accent
-          label="DP hari ini"
-          value={formatIDR(data.today.dp)}
-          hint="Total DP dari pesanan hari ini"
+          label={`DP ${periodText}`}
+          value={formatIDR(data.totals.dp)}
+          hint={isToday ? "Total DP dari pesanan hari ini" : "Total DP pada rentang ini"}
         />
         <Stat
           label="Lihat pre-order"
-          value={String(data.today.preorderVisitors)}
+          value={String(data.totals.preorderVisitors)}
           hint="Pengunjung unik ke /preorder"
         />
         <Stat
           label="QRIS dibuka"
-          value={String(data.today.qrisOpens)}
+          value={String(data.totals.qrisOpens)}
           hint="Klik pada poster QRIS"
         />
         <Stat
           label="Bukti DP diunggah"
-          value={String(data.today.proofUploads)}
+          value={String(data.totals.proofUploads)}
           hint="Event unggah bukti transfer"
         />
       </section>
 
       <section className="grid gap-4 xl:grid-cols-[1.35fr_1fr]">
         <Panel
-          title="Aktivitas 30 menit terakhir"
-          hint="Per menit · WIB · auto-refresh 5 detik"
+          title={isToday ? "Aktivitas 30 menit terakhir" : "Tren harian"}
+          hint={
+            isToday
+              ? "Per menit · WIB · auto-refresh 5 detik"
+              : `Per hari · ${periodText} · WIB`
+          }
         >
           <ActivityChart series={data.series} />
         </Panel>
@@ -260,21 +325,21 @@ export default function LiveDashboard({ initial }: { initial: LiveSnapshot }) {
       </section>
 
       <section className="grid gap-4 lg:grid-cols-[1.15fr_1fr_1fr]">
-        <Panel title="Corong hari ini" hint="Pengunjung unik → pesanan">
+        <Panel title={`Corong ${periodText}`} hint="Pengunjung unik → pesanan">
           <Funnel steps={data.funnel} />
         </Panel>
 
-        <Panel title="Halaman terpopuler" hint="Hari ini">
+        <Panel title="Halaman terpopuler" hint={periodText}>
           <RankedList
             items={data.topPages.map((page) => ({
               label: page.path,
               value: page.views,
             }))}
-            empty="Belum ada kunjungan hari ini."
+            empty={`Belum ada kunjungan ${periodText}.`}
           />
         </Panel>
 
-        <Panel title="Sumber trafik" hint="Hari ini">
+        <Panel title="Sumber trafik" hint={periodText}>
           <RankedList
             items={data.sources.map((source) => ({
               label: source.source,
@@ -285,9 +350,18 @@ export default function LiveDashboard({ initial }: { initial: LiveSnapshot }) {
         </Panel>
       </section>
 
+      {!isToday ? (
+        <Panel
+          title="Rincian per hari"
+          hint={`${periodText} · WIB · auto-refresh 5 detik`}
+        >
+          <DailyTable rows={data.daily} totals={data.totals} />
+        </Panel>
+      ) : null}
+
       <Panel
-        title="Pembayaran DP hari ini"
-        hint={`${data.today.orders} pesanan · ${formatIDR(data.today.dp)}`}
+        title={`Pembayaran DP ${periodText}`}
+        hint={`${data.totals.orders} pesanan · ${formatIDR(data.totals.dp)}`}
         action={
           <Link
             href="/admin"
@@ -298,7 +372,7 @@ export default function LiveDashboard({ initial }: { initial: LiveSnapshot }) {
         }
       >
         {data.payments.length === 0 ? (
-          <Empty>Belum ada pembayaran DP yang masuk hari ini.</Empty>
+          <Empty>Belum ada pembayaran DP yang masuk {periodText}.</Empty>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[640px] border-collapse text-left text-sm">
@@ -479,6 +553,68 @@ function Legend({ className, label }: { className: string; label: string }) {
       <span className={`h-2 w-2 rounded-[2px] ${className}`} />
       {label}
     </span>
+  );
+}
+
+function DailyTable({
+  rows,
+  totals,
+}: {
+  rows: LiveDailyRow[];
+  totals: LiveSnapshot["totals"];
+}) {
+  const ordered = [...rows].reverse();
+  const busiest = Math.max(1, ...rows.map((row) => row.pageviews));
+
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full min-w-[560px] border-collapse text-left text-sm">
+        <thead>
+          <tr className="border-b border-line text-[9px] tracking-[0.14em] text-ink-faint uppercase">
+            <th className="py-2 pr-4 font-normal">Tanggal</th>
+            <th className="px-3 py-2 text-right font-normal">Pengunjung</th>
+            <th className="px-3 py-2 text-right font-normal">Kunjungan</th>
+            <th className="px-3 py-2 text-right font-normal">Klik Order</th>
+            <th className="px-3 py-2 text-right font-normal">Order</th>
+            <th className="py-2 pl-3 text-right font-normal">DP</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-line/70">
+          {ordered.map((row) => (
+            <tr key={row.key}>
+              <td className="py-2.5 pr-4 text-[12px]">{row.label}</td>
+              <td className="px-3 py-2.5 text-right text-[12px]">{row.visitors}</td>
+              <td className="px-3 py-2.5 text-right text-[12px]">
+                <span className="inline-flex items-center gap-2">
+                  <span className="h-1 w-12 overflow-hidden rounded-full bg-paper-dim">
+                    <span
+                      className="block h-full rounded-full bg-wine/40"
+                      style={{ width: `${(row.pageviews / busiest) * 100}%` }}
+                    />
+                  </span>
+                  {row.pageviews}
+                </span>
+              </td>
+              <td className="px-3 py-2.5 text-right text-[12px]">{row.clicks}</td>
+              <td className="px-3 py-2.5 text-right text-[12px]">{row.orders}</td>
+              <td className="py-2.5 pl-3 text-right text-[12px] text-wine">
+                {formatIDR(row.dp)}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+        <tfoot>
+          <tr className="border-t border-line text-[11px] font-medium">
+            <td className="py-2.5 pr-4">Total</td>
+            <td className="px-3 py-2.5 text-right">{totals.visitors}</td>
+            <td className="px-3 py-2.5 text-right">{totals.pageviews}</td>
+            <td className="px-3 py-2.5 text-right">{totals.clicks}</td>
+            <td className="px-3 py-2.5 text-right">{totals.orders}</td>
+            <td className="py-2.5 pl-3 text-right text-wine">{formatIDR(totals.dp)}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
   );
 }
 

@@ -47,9 +47,34 @@ export type LiveEvent = {
   created_at: string;
 };
 
+export const LIVE_RANGES = ["today", "7d", "30d"] as const;
+
+export type LiveRangeKey = (typeof LIVE_RANGES)[number];
+
+export function isLiveRangeKey(value: string): value is LiveRangeKey {
+  return (LIVE_RANGES as readonly string[]).includes(value);
+}
+
+export type LiveDailyRow = {
+  key: string;
+  label: string;
+  pageviews: number;
+  visitors: number;
+  clicks: number;
+  orders: number;
+  dp: number;
+};
+
 export type LiveSnapshot = {
   generatedAt: string;
-  today: {
+  range: {
+    key: LiveRangeKey;
+    label: string;
+    days: number;
+    start: string;
+  };
+  bucket: "minute" | "day";
+  totals: {
     pageviews: number;
     visitors: number;
     clicks: number;
@@ -70,6 +95,7 @@ export type LiveSnapshot = {
     clicks: number;
     orders: number;
   }>;
+  daily: LiveDailyRow[];
   feed: LiveEvent[];
   funnel: Array<{ key: string; label: string; value: number }>;
   topPages: Array<{ path: string; views: number }>;

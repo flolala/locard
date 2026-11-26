@@ -88,11 +88,15 @@ Pesanan disimpan di tabel `orders` (D1); bukti transfer disimpan di KV
 `/admin/live` menampilkan aktivitas situs secara real-time (auto-refresh tiap 5
 detik, login admin yang sama dengan `/admin`):
 
-- pengunjung online (5 menit terakhir), kunjungan halaman, dan pengunjung unik hari ini;
+- pengunjung online (5 menit terakhir), kunjungan halaman, dan pengunjung unik;
 - klik tombol Order, klik WhatsApp, dan pembukaan poster QRIS;
-- order masuk, total DP hari ini, serta daftar pembayaran terbaru;
+- order masuk, total DP, serta daftar pembayaran terbaru;
 - corong kunjungan → lihat pre-order → klik Order → pesanan;
 - event terbaru, halaman terpopuler, dan sumber trafik.
+
+Pemilih rentang di atas kartu angka menyediakan **Hari ini** (grafik per menit),
+**7 hari**, dan **30 hari** (grafik + rincian per hari, plus baris total). Semua
+hari dihitung memakai zona waktu WIB (UTC+7).
 
 Event dikirim oleh `SiteTracker` di browser ke `POST /api/track` lalu disimpan di
 tabel `events` (D1). Saat pesanan berhasil dibuat, server juga menulis event
